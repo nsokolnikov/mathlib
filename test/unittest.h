@@ -1,5 +1,4 @@
 #pragma once
-
 #include "declaration.h"
 
 struct D1 : public algebra::dimention<1> {};
