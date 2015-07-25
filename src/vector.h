@@ -13,11 +13,11 @@ namespace algebra
 	private:
 
 	public:
-		typedef typename D dimention;
-		static const size_t rank = dimention::rank;
+		typedef typename D dimension;
+		static const size_t rank = dimension::rank;
 		typedef vector<D> _Self;
 
-		static_assert(std::is_base_of<algebra::dimension<rank>, D>::value, "Type parameter D must be a dimention.");
+		static_assert(std::is_base_of<algebra::dimension<rank>, D>::value, "Type parameter D must be a dimension.");
 
 		vector()
 			: m_values()
