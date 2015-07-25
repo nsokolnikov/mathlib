@@ -17,7 +17,7 @@ namespace algebra
 		static const size_t rank = dimention::rank;
 		typedef vector<D> _Self;
 
-		static_assert(std::is_base_of<algebra::dimention<rank>, D>::value, "Type parameter D must be a dimention.");
+		static_assert(std::is_base_of<algebra::dimension<rank>, D>::value, "Type parameter D must be a dimention.");
 
 		vector()
 			: m_values()

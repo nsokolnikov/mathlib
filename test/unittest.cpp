@@ -1,4 +1,8 @@
 #include "stdafx.h"
+
+#include <exception>
+#include <iostream>
+
 #include <unittest.h>
 
 void run_tests()

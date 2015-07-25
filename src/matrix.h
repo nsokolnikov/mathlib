@@ -20,8 +20,8 @@ namespace algebra
 		static const size_t row_rank = row_dimention::rank;
 		static const size_t column_rank = column_dimention::rank;
 
-		static_assert(std::is_base_of<dimention<row_rank>, M>::value, "Type parameter M must be a dimention.");
-		static_assert(std::is_base_of<dimention<column_rank>, N>::value, "Type parameter N must be a dimention.");
+		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimention.");
+		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimention.");
 
 		static_assert(_Self::column_rank <= 10000 && _Self::row_rank <= 10000, "Matrix dimentions cannot exceed 10000.");
 

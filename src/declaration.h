@@ -3,11 +3,11 @@
 namespace algebra
 {
 	template <const size_t Rank>
-	struct dimention
+	struct dimension
 	{
 		static const size_t rank = Rank;
 
-		static_assert(rank > 0, "Dimention cannot be zero.");
+		static_assert(rank > 0, "Dimension cannot be zero.");
 	};
 
 	// Utility template to get last template argument from a
