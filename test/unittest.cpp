@@ -1,5 +1,5 @@
-#include "../MathLib/stdafx.h"
-#include "unittest.h"
+#include "stdafx.h"
+#include <unittest.h>
 
 void run_tests()
 {

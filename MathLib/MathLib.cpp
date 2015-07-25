@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "../test/unittest.h"
+#include <unittest.h>
 
 int _tmain(int /*argc*/, _TCHAR* /*argv[]*/)
 {

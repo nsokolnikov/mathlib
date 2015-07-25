@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "unittest.h"
-#include "../src/expression.h"
+#include <unittest.h>
+#include <expression.h>
 
 void test_expressions()
 {
