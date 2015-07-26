@@ -14,11 +14,11 @@ namespace algebra
 	class matrix
 	{
 	public:
-		typedef typename M row_dimention;
-		typedef typename N column_dimention;
-		typedef matrix<row_dimention, column_dimention> _Self;
-		static const size_t row_rank = row_dimention::rank;
-		static const size_t column_rank = column_dimention::rank;
+		typedef typename M row_dimension;
+		typedef typename N column_dimension;
+		typedef matrix<row_dimension, column_dimension> _Self;
+		static const size_t row_rank = row_dimension::rank;
+		static const size_t column_rank = column_dimension::rank;
 
 		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimention.");
 		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimention.");
@@ -335,8 +335,8 @@ namespace algebra
 	{
 		typedef typename _2_matrix_mul_cost<A, B, C> temp_result;
 		typedef typename _2_matrix_mul_cost<
-			typename temp_result::result_type::row_dimention,
-			typename temp_result::result_type::column_dimention, D> final_result;
+			typename temp_result::result_type::row_dimension,
+			typename temp_result::result_type::column_dimension, D> final_result;
 
 		static const size_t cost = typename temp_result::cost + typename final_result::cost;
 
@@ -365,8 +365,8 @@ namespace algebra
 		typedef typename _2_matrix_mul_cost<B, C, D> temp_result;
 		typedef typename _2_matrix_mul_cost<
 			A,
-			typename temp_result::result_type::row_dimention,
-			typename temp_result::result_type::column_dimention> final_result;
+			typename temp_result::result_type::row_dimension,
+			typename temp_result::result_type::column_dimension> final_result;
 
 		static const size_t cost = typename temp_result::cost + typename final_result::cost;
 
@@ -413,8 +413,8 @@ namespace algebra
 		typedef typename _3_matix_mul_best_cost<B, C, D, E> temp_result;
 		typedef typename _2_matrix_mul_cost<
 			A,
-			typename temp_result::result_type::row_dimention,
-			typename temp_result::result_type::column_dimention> final_result;
+			typename temp_result::result_type::row_dimension,
+			typename temp_result::result_type::column_dimension> final_result;
 
 		static const size_t cost = typename temp_result::cost + typename final_result::cost;
 
@@ -441,8 +441,8 @@ namespace algebra
 	{
 		typedef typename _3_matix_mul_best_cost<A, B, C, D> temp_result;
 		typedef typename _2_matrix_mul_cost<
-			typename temp_result::result_type::row_dimention,
-			typename temp_result::result_type::column_dimention,
+			typename temp_result::result_type::row_dimension,
+			typename temp_result::result_type::column_dimension,
 			E> final_result;
 
 		static const size_t cost = typename temp_result::cost + typename final_result::cost;
@@ -471,9 +471,9 @@ namespace algebra
 		typedef typename _2_matrix_mul_cost<A, B, C> temp_result_1;
 		typedef typename _2_matrix_mul_cost<C, D, E> temp_result_2;
 		typedef typename _2_matrix_mul_cost<
-			typename temp_result_1::result_type::row_dimention,
-			typename temp_result_1::result_type::column_dimention,
-			typename temp_result_2::result_type::column_dimention> final_result;
+			typename temp_result_1::result_type::row_dimension,
+			typename temp_result_1::result_type::column_dimension,
+			typename temp_result_2::result_type::column_dimension> final_result;
 
 		static const size_t cost = typename temp_result_1::cost + typename temp_result_2::cost + typename final_result::cost;
 
@@ -520,8 +520,8 @@ namespace algebra
 		typedef typename _4_matix_mul_best_cost<B, C, D, E, F> temp_result;
 		typedef typename _2_matrix_mul_cost<
 			A,
-			typename temp_result::result_type::row_dimention,
-			typename temp_result::result_type::column_dimention> final_result;
+			typename temp_result::result_type::row_dimension,
+			typename temp_result::result_type::column_dimension> final_result;
 
 		static const size_t cost = typename temp_result::cost + typename final_result::cost;
 
@@ -549,8 +549,8 @@ namespace algebra
 	{
 		typedef typename _4_matix_mul_best_cost<A, B, C, D, E> temp_result;
 		typedef typename _2_matrix_mul_cost<
-			typename temp_result::result_type::row_dimention,
-			typename temp_result::result_type::column_dimention,
+			typename temp_result::result_type::row_dimension,
+			typename temp_result::result_type::column_dimension,
 			F> final_result;
 
 		static const size_t cost = typename temp_result::cost + typename final_result::cost;
@@ -579,8 +579,8 @@ namespace algebra
 	{
 		typedef typename _3_matix_mul_best_cost<A, B, C, D> temp_result;
 		typedef typename _3_matix_mul_best_cost<
-			typename temp_result::result_type::row_dimention,
-			typename temp_result::result_type::column_dimention,
+			typename temp_result::result_type::row_dimension,
+			typename temp_result::result_type::column_dimension,
 			E,
 			F> final_result;
 
@@ -615,8 +615,8 @@ namespace algebra
 		typedef typename _3_matix_mul_best_cost<
 			A,
 			B,
-			typename temp_result::result_type::row_dimention,
-			typename temp_result::result_type::column_dimention> final_result;
+			typename temp_result::result_type::row_dimension,
+			typename temp_result::result_type::column_dimension> final_result;
 
 		static const size_t cost = typename temp_result::cost + typename final_result::cost;
 
@@ -664,12 +664,12 @@ namespace algebra
 	template <class M1, class M2, class M3, class... _Args>
 	struct _matrix_mul_best_cost
 	{
-		static_assert(M1::column_dimention::rank == M2::row_dimention::rank, "Row rank of M1 does not match column rank of M2.");
+		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
 
 		typedef typename _2_matrix_mul_cost<
-			typename M1::row_dimention,
-			typename M1::column_dimention,
-			typename _matrix_mul_best_cost<M2, M3, _Args...>::result_type::column_dimention> _1_x_args;
+			typename M1::row_dimension,
+			typename M1::column_dimension,
+			typename _matrix_mul_best_cost<M2, M3, _Args...>::result_type::column_dimension> _1_x_args;
 
 		struct impl_1 : public _1_x_args
 		{
@@ -687,10 +687,10 @@ namespace algebra
 		};
 
 		typedef typename _3_matix_mul_best_cost<
-			typename M1::row_dimention,
-			typename M1::column_dimention,
-			typename M2::column_dimention,
-			typename _matrix_mul_best_cost<M3, _Args...>::result_type::column_dimention> _2_x_args;
+			typename M1::row_dimension,
+			typename M1::column_dimension,
+			typename M2::column_dimension,
+			typename _matrix_mul_best_cost<M3, _Args...>::result_type::column_dimension> _2_x_args;
 
 		struct impl_2 : public _2_x_args
 		{
@@ -710,11 +710,11 @@ namespace algebra
 		};
 
 		typedef typename _4_matix_mul_best_cost<
-			typename M1::row_dimention,
-			typename M1::column_dimention,
-			typename M2::column_dimention,
-			typename M3::column_dimention,
-			typename _matrix_mul_best_cost<_Args...>::result_type::column_dimention> _3_x_args;
+			typename M1::row_dimension,
+			typename M1::column_dimension,
+			typename M2::column_dimension,
+			typename M3::column_dimension,
+			typename _matrix_mul_best_cost<_Args...>::result_type::column_dimension> _3_x_args;
 
 		struct impl_3 : public _3_x_args
 		{
@@ -743,14 +743,14 @@ namespace algebra
 	template <class M1, class M2, class M3>
 	struct _matrix_mul_best_cost<M1, M2, M3>
 	{
-		static_assert(M1::column_dimention::rank == M2::row_dimention::rank, "Row rank of M1 does not match column rank of M2.");
-		static_assert(M2::column_dimention::rank == M3::row_dimention::rank, "Row rank of M2 does not match column rank of M3.");
+		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
+		static_assert(M2::column_dimension::rank == M3::row_dimension::rank, "Row rank of M2 does not match column rank of M3.");
 
 		typedef typename _3_matix_mul_best_cost<
-			typename M1::row_dimention,
-			typename M1::column_dimention,
-			typename M2::column_dimention,
-			typename M3::column_dimention>::type type;
+			typename M1::row_dimension,
+			typename M1::column_dimension,
+			typename M2::column_dimension,
+			typename M3::column_dimension>::type type;
 
 		typedef typename type::result_type result_type;
 
@@ -760,16 +760,16 @@ namespace algebra
 	template <class M1, class M2, class M3, class M4>
 	struct _matrix_mul_best_cost<M1, M2, M3, M4>
 	{
-		static_assert(M1::column_dimention::rank == M2::row_dimention::rank, "Row rank of M1 does not match column rank of M2.");
-		static_assert(M2::column_dimention::rank == M3::row_dimention::rank, "Row rank of M2 does not match column rank of M3.");
-		static_assert(M3::column_dimention::rank == M4::row_dimention::rank, "Row rank of M3 does not match column rank of M4.");
+		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
+		static_assert(M2::column_dimension::rank == M3::row_dimension::rank, "Row rank of M2 does not match column rank of M3.");
+		static_assert(M3::column_dimension::rank == M4::row_dimension::rank, "Row rank of M3 does not match column rank of M4.");
 
 		typedef typename _4_matix_mul_best_cost<
-			typename M1::row_dimention,
-			typename M1::column_dimention,
-			typename M2::column_dimention,
-			typename M3::column_dimention,
-			typename M4::column_dimention>::type type;
+			typename M1::row_dimension,
+			typename M1::column_dimension,
+			typename M2::column_dimension,
+			typename M3::column_dimension,
+			typename M4::column_dimension>::type type;
 
 		typedef typename type::result_type result_type;
 
@@ -779,18 +779,18 @@ namespace algebra
 	template <class M1, class M2, class M3, class M4, class M5>
 	struct _matrix_mul_best_cost<M1, M2, M3, M4, M5>
 	{
-		static_assert(M1::column_dimention::rank == M2::row_dimention::rank, "Row rank of M1 does not match column rank of M2.");
-		static_assert(M2::column_dimention::rank == M3::row_dimention::rank, "Row rank of M2 does not match column rank of M3.");
-		static_assert(M3::column_dimention::rank == M4::row_dimention::rank, "Row rank of M3 does not match column rank of M4.");
-		static_assert(M4::column_dimention::rank == M5::row_dimention::rank, "Row rank of M4 does not match column rank of M5.");
+		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
+		static_assert(M2::column_dimension::rank == M3::row_dimension::rank, "Row rank of M2 does not match column rank of M3.");
+		static_assert(M3::column_dimension::rank == M4::row_dimension::rank, "Row rank of M3 does not match column rank of M4.");
+		static_assert(M4::column_dimension::rank == M5::row_dimension::rank, "Row rank of M4 does not match column rank of M5.");
 
 		typedef typename _5_matix_mul_best_cost<
-			typename M1::row_dimention,
-			typename M1::column_dimention,
-			typename M2::column_dimention,
-			typename M3::column_dimention,
-			typename M4::column_dimention,
-			typename M5::column_dimention>::type type;
+			typename M1::row_dimension,
+			typename M1::column_dimension,
+			typename M2::column_dimension,
+			typename M3::column_dimension,
+			typename M4::column_dimension,
+			typename M5::column_dimension>::type type;
 
 		typedef typename type::result_type result_type;
 
@@ -799,49 +799,49 @@ namespace algebra
 
 	template <class M1, class M2>
 	matrix<
-		typename M1::row_dimention,
-		typename M2::column_dimention>
+		typename M1::row_dimension,
+		typename M2::column_dimension>
 	multiply(
 		const M1& m1,
 		const M2& m2)
 	{
-		static_assert(M1::column_dimention::rank == M2::row_dimention::rank, "Row rank of M1 does not match column rank of M2.");
+		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
 
 		return m1 * m2;
 	}
 
 	template <class M1, class M2, class M3>
 	matrix<
-		typename M1::row_dimention,
-		typename M3::column_dimention>
+		typename M1::row_dimension,
+		typename M3::column_dimension>
 	multiply(
 		const M1& m1,
 		const M2& m2,
 		const M3& m3)
 	{
-		static_assert(M1::column_dimention::rank == M2::row_dimention::rank, "Row rank of M1 does not match column rank of M2.");
-		static_assert(M2::column_dimention::rank == M3::row_dimention::rank, "Row rank of M2 does not match column rank of M3.");
+		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
+		static_assert(M2::column_dimension::rank == M3::row_dimension::rank, "Row rank of M2 does not match column rank of M3.");
 
 		return _3_matix_mul_best_cost<
-			typename M1::row_dimention,
-			typename M1::column_dimention,
-			typename M2::column_dimention,
-			typename M3::column_dimention>::type::multiply(m1, m2, m3);
+			typename M1::row_dimension,
+			typename M1::column_dimension,
+			typename M2::column_dimension,
+			typename M3::column_dimension>::type::multiply(m1, m2, m3);
 	}
 
 	// Variadic template for chain multiplication of 4 or more matrices.
 	template <class M1, class M2, class M3, class... _Args>
 	matrix<
-		typename M1::row_dimention,
-		typename last<_Args...>::type::column_dimention>
+		typename M1::row_dimension,
+		typename last<_Args...>::type::column_dimension>
 	multiply(
 		const M1& m1,
 		const M2& m2,
 		const M3& m3,
 		const _Args&... args)
 	{
-		static_assert(M1::column_dimention::rank == M2::row_dimention::rank, "Row rank of M1 does not match column rank of M2.");
-		static_assert(M2::column_dimention::rank == M3::row_dimention::rank, "Row rank of M2 does not match column rank of M3.");
+		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
+		static_assert(M2::column_dimension::rank == M3::row_dimension::rank, "Row rank of M2 does not match column rank of M3.");
 
 		return _matrix_mul_best_cost<M1, M2, M3, _Args...>::type::multiply(m1, m2, m3, args...);
 	}
