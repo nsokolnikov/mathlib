@@ -6,6 +6,7 @@
 
 int _tmain(int /*argc*/, _TCHAR* /*argv[]*/)
 {
+	//test change
 	run_tests();
 
 	return 0;
