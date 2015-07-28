@@ -10,6 +10,416 @@
 
 namespace algebra
 {
+	template <class A, class B>
+	struct _min_rank
+	{
+		typedef typename std::conditional<(A::rank <= B::rank), A, B>::type type;
+	};
+
+	template <class _Matrix>
+	class const_row_iterator
+	{
+	public:
+		typedef typename _Matrix::column_dimension column_dimension;
+		static const size_t column_rank = column_dimension::rank;
+		typedef const_row_iterator<_Matrix> _Self;
+
+		typedef typename std::random_access_iterator_tag iterator_category;
+		typedef typename const _Matrix::value_type value_type;
+		typedef typename std::ptrdiff_t difference_type;
+		typedef difference_type distance_type;
+		typedef typename const value_type* pointer;
+		typedef typename const value_type& reference;
+
+		const_row_iterator(_Matrix& matrix, const size_t row)
+			: m_pMatrix(std::addressof(matrix)), m_row(row), m_index(0)
+		{
+			if (m_row >= _Matrix::row_rank)
+				throw std::invalid_argument("Row index is out of range.");
+		}
+
+		const_row_iterator(const _Self& other)
+			: m_pMatrix(other.m_pMatrix), m_row(other.m_row), m_index(other.m_index)
+		{}
+
+		reference operator*() const
+		{
+			if (m_index >= _Self::column_rank)
+				throw std::invalid_argument("Iterator cannot be dereferenced.");
+
+			return (*(this->m_pMatrix))(m_row, m_index);
+		}
+
+		// postincrement
+		_Self operator++(int)
+		{
+			_Self t = *this;
+			this->_Increment();
+			return t;
+		}
+
+		// predincrement
+		_Self& operator++()
+		{
+			this->_Increment();
+			return (*this);
+		}
+
+		// postdecrement
+		_Self operator--(int)
+		{
+			_Self t = *this;
+			this->_Decrement();
+			return t;
+		}
+
+		// predecrement
+		_Self& operator--()
+		{
+			this->_Decrement();
+			return (*this);
+		}
+
+		_Self& operator+=(difference_type offset)
+		{
+			this->_IncrementBy(offset);
+			return (*this);
+		}
+
+		_Self& operator-=(difference_type offset)
+		{
+			this->_IncrementBy(-offset);
+			return (*this);
+		}
+
+		bool operator==(const _Self& other) const
+		{	
+			return (this->m_pMatrix == other.m_pMatrix
+				&& this->m_row == other.m_row
+				&& this->m_index == other.m_index);
+		}
+
+		bool operator!=(const _Self& other) const
+		{
+			return (!(*this == other));
+		}
+
+		bool operator<(const _Self& other) const
+		{
+			return (this->m_pMatrix < other.m_pMatrix
+				|| (this->m_pMatrix == other.m_pMatrix 
+					&& (this->m_row < other.m_row
+						|| (this->m_row == other.m_row
+							&& this->m_index < other.m_index))));
+		}
+
+		bool operator>(const _Self& other) const
+		{
+			return (other < *this);
+		}
+
+		bool operator<=(const _Self& other) const
+		{
+			return (!(other < *this));
+		}
+
+		bool operator>=(const _Self& other) const
+		{
+			return (!(*this < other));
+		}
+
+		void _Increment()
+		{
+			if (m_index < _Self::column_rank)
+			{
+				++m_index;
+			}
+		}
+
+		void _Decrement()
+		{
+			if (0 < m_index)
+			{
+				--m_index;
+			}
+		}
+
+		void _IncrementBy(difference_type offset)
+		{
+			if (offset >= 0)
+			{
+				m_index = (offset <= (difference_type)(_Self::column_rank - m_index))
+					? m_index + offset
+					: _Self::column_rank;
+			}
+			else
+			{
+				m_index = ((difference_type)m_index > -offset) ? m_index + offset : 0;
+			}
+		}
+
+		// return this + integer
+		_Self operator+(difference_type offset) const
+		{
+			_Self t = *this;
+			return (t += offset);
+		}
+
+		// return this - integer
+		_Self operator-(difference_type offset) const
+		{
+			_Self t = *this;
+			return (t -= offset);
+		}
+
+		// return difference of iterators
+		difference_type operator-(const _Self& right) const
+		{
+			return (this->m_index - right.m_index);
+		}
+
+	protected:
+		_Matrix* m_pMatrix;
+		size_t m_row;
+		size_t m_index;
+	};
+
+	// add offset to iterator
+	template<class _Matrix> inline
+		const_row_iterator<_Matrix> operator+(
+		typename const_row_iterator<_Matrix>::difference_type offset,
+		const_row_iterator<_Matrix> right)
+	{
+		return (right += offset);
+	}
+
+	template <class _Matrix>
+	class row_iterator : public const_row_iterator<_Matrix>
+	{
+	public:
+		typedef typename _Matrix::column_dimension column_dimension;
+		static const size_t column_rank = column_dimension::rank;
+		typedef const_row_iterator<_Matrix> _Base;
+		typedef row_iterator<_Matrix> _Self;
+
+		typedef typename _Matrix::value_type value_type;
+		typedef typename value_type* pointer;
+		typedef typename value_type& reference;
+
+		row_iterator(_Matrix& matrix, const size_t row)
+			: _Base(matrix, row)
+		{}
+
+		row_iterator(const _Self& other)
+			: _Base(other)
+		{}
+
+		reference operator*() const
+		{
+			return (reference)**((_Base*)this);
+		}
+
+		// postincrement
+		_Self operator++(int)
+		{
+			_Self t = *this;
+			this->_Increment();
+			return t;
+		}
+
+		// predecrement
+		_Self& operator++()
+		{
+			this->_Increment();
+			return (*this);
+		}
+
+		// postdecrement
+		_Self operator--(int)
+		{
+			_Self t = *this;
+			this->_Decrement();
+			return t;
+		}
+
+		// predecrement
+		_Self& operator--()
+		{
+			this->_Decrement();
+			return (*this);
+		}
+
+		_Self& operator+=(difference_type offset)
+		{
+			this->_IncrementBy(offset);
+			return (*this);
+		}
+
+		_Self& operator-=(difference_type offset)
+		{
+			this->_IncrementBy(-offset);
+			return (*this);
+		}
+
+		// return this + integer
+		_Self operator+(difference_type offset) const
+		{
+			_Self t = *this;
+			return (t += offset);
+		}
+
+		// return this - integer
+		_Self operator-(difference_type offset) const
+		{
+			_Self t = *this;
+			return (t -= offset);
+		}
+
+		// return difference of iterators
+		difference_type operator-(const _Self& right) const
+		{
+			return (this->m_index - right.m_index);
+		}
+	};
+
+	// add offset to iterator
+	template<class _Matrix> inline
+		row_iterator<_Matrix> operator+(
+		typename row_iterator<_Matrix>::difference_type offset,
+		row_iterator<_Matrix> right)
+	{
+		return (right += offset);
+	}
+
+	template<class _Matrix>
+	struct std::_Is_checked_helper<typename const_row_iterator<_Matrix> >
+		: public std::true_type
+	{	// mark const_row_iterator as checked
+	};
+
+	template<class _Matrix>
+	struct std::_Is_checked_helper<typename row_iterator<_Matrix> >
+		: public std::true_type
+	{	// mark row_iterator as checked
+	};
+
+	template <class M, class N, class _Matrix>
+	class const_view
+	{
+	public:
+		typedef const_view<M, N, _Matrix> _Self;
+		typedef typename M row_dimension;
+		typedef typename N column_dimension;
+		static const size_t row_rank = row_dimension::rank;
+		static const size_t column_rank = column_dimension::rank;
+
+		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimension.");
+		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimension.");
+
+		typedef typename _Matrix::value_type value_type;
+		typedef typename const_row_iterator<_Self> const_row_iterator;
+
+		const_view(_Matrix& matrix, const size_t row, const size_t column)
+			: m_pMatrix(std::addressof(matrix)), m_Row(row), m_Column(column)
+		{
+			if (column >= _Matrix::column_rank)
+				throw std::invalid_argument("Base column index out of range.");
+			if (_Matrix::column_rank - column < _Self::column_rank)
+				throw std::invalid_argument("View is out of the base matrix column range.");
+
+			if (row >= _Matrix::row_rank)
+				throw std::invalid_argument("Base row index out of range.");
+			if (_Matrix::row_rank - row < _Self::row_rank)
+				throw std::invalid_argument("View is out of the base matrix row range.");
+		}
+
+		const_view(const _Self& other)
+			: m_pMatrix(other.m_pMatrix), m_Row(other.m_Row), m_Column(other.m_Column)
+		{}
+
+		_Self operator=(const _Self& other)
+		{
+			m_pMatrix = other.m_pMatrix;
+			m_Row = other.m_Row;
+			m_Column = other.m_Column;
+		}
+
+		const value_type& operator() (
+			const size_t row,
+			const size_t column) const
+		{
+			if (column >= _Self::column_rank)
+				throw std::invalid_argument("Column index out of range.");
+			if (row >= _Self::row_rank)
+				throw std::invalid_argument("Row index out of range.");
+
+			return (*this->m_pMatrix)(m_Row + row, m_Column + column);
+		}
+
+		const_row_iterator row_begin(const size_t row)
+		{
+			return const_row_iterator(*this, row);
+		}
+
+		const_row_iterator row_end(const size_t row)
+		{
+			const_row_iterator it(*this, row);
+			it += _Self::column_rank;
+			return it;
+		}
+
+	protected:
+		_Matrix* m_pMatrix;
+		const size_t m_Row;
+		const size_t m_Column;
+	};
+
+	template <class M, class N, class _Matrix>
+	class view : public const_view<M, N, _Matrix>
+	{
+	public:
+		typedef typename const_view<M, N, _Matrix> _Base;
+		typedef view<M, N, _Matrix> _Self;
+		typedef typename M row_dimension;
+		typedef typename N column_dimension;
+		static const size_t row_rank = row_dimension::rank;
+		static const size_t column_rank = column_dimension::rank;
+
+		typedef typename _Matrix::value_type value_type;
+		typedef typename row_iterator<_Self> row_iterator;
+
+		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimension.");
+		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimension.");
+
+		view(_Matrix& matrix, const size_t row, const size_t column)
+			: _Base(matrix, row, column)
+		{
+		}
+
+		view(const _Self& other)
+			: _Base(other)
+		{}
+
+		value_type& operator() (
+			const size_t row,
+			const size_t column) const
+		{
+			return ((value_type&)(*(_Base*)this)(row, column));
+		}
+
+		row_iterator row_begin(const size_t row)
+		{
+			return row_iterator(*this, row);
+		}
+
+		row_iterator row_end(const size_t row)
+		{
+			row_iterator it(*this, row);
+			it += _Self::column_rank;
+			return it;
+		}
+	};
+
 	template <class M, class N>
 	class matrix
 	{
@@ -20,10 +430,14 @@ namespace algebra
 		static const size_t row_rank = row_dimension::rank;
 		static const size_t column_rank = column_dimension::rank;
 
-		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimention.");
-		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimention.");
+		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimension.");
+		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimension.");
 
-		static_assert(_Self::column_rank <= 10000 && _Self::row_rank <= 10000, "Matrix dimentions cannot exceed 10000.");
+		static_assert(_Self::column_rank <= 10000 && _Self::row_rank <= 10000, "Matrix dimensions cannot exceed 10000.");
+
+		typedef double value_type;
+		typedef typename const_row_iterator<const _Self> const_row_iterator;
+		typedef typename row_iterator<_Self> row_iterator;
 
 		matrix()
 			: m_values()
@@ -39,7 +453,7 @@ namespace algebra
 			: m_values(std::move(other.m_values))
 		{}
 
-		matrix(std::initializer_list<double> data)
+		matrix(std::initializer_list<value_type> data)
 			: m_values()
 		{
 			if (data.size() != _Self::column_rank * _Self::row_rank)
@@ -51,6 +465,33 @@ namespace algebra
 		bool empty() const
 		{
 			return m_values.size() == 0;
+		}
+
+		bool equals(const _Self& other) const
+		{
+			if (this == std::addressof(other))
+				return true;
+
+			if (this->empty())
+			{
+				if (other.empty())
+					return true;
+
+				return false;
+			}
+			else if (other.empty())
+			{
+				return false;
+			}
+
+			for (auto it = m_values.begin(), end = m_values.end(), oit = other.m_values.begin();
+				it != end; ++it, ++oit)
+			{
+				if (false == double_equals(*it, *oit))
+					return false;
+			}
+
+			return true;
 		}
 
 		_Self& operator=(const _Self& other)
@@ -73,7 +514,7 @@ namespace algebra
 			return (*this);
 		}
 
-		double& operator() (
+		value_type& operator() (
 			const size_t row,
 			const size_t column)
 		{
@@ -84,14 +525,14 @@ namespace algebra
 
 			if (m_values.size() == 0)
 			{
-				const double zero = 0.0;
+				const value_type zero = number_traits<value_type>::zero();
 				m_values.assign(_Self::column_rank * _Self::row_rank, zero);
 			}
 
 			return m_values[row * _Self::column_rank + column];
 		}
 
-		const double& operator() (
+		const value_type& operator() (
 			const size_t row,
 			const size_t column) const
 		{
@@ -102,7 +543,7 @@ namespace algebra
 
 			if (m_values.size() == 0)
 			{
-				static const double zero = 0.0;
+				static const value_type zero = 0.0;
 				return zero;
 			}
 
@@ -120,6 +561,108 @@ namespace algebra
 					for (size_t col = 0; col < _Self::column_rank; ++col)
 					{
 						result(col, row) = (*this)(row, col);
+					}
+				}
+			}
+
+			return result;
+		}
+
+		template <
+			class _ViewRows,
+			class _ViewColumns>
+		typename const_view<_ViewRows, _ViewColumns, const _Self> make_const_view(
+			const size_t row,
+			const size_t column) const
+		{
+			static_assert(_ViewRows::rank <= _Self::row_rank, "Too many rows in view.");
+			static_assert(_ViewColumns::rank <= _Self::column_rank, "Too many columns in view.");
+
+			if (column >= _Self::column_rank)
+				throw std::invalid_argument("Base column index is too large for the view.");
+			if (row >= _Self::row_rank)
+				throw std::invalid_argument("Base row index is too large for the view.");
+
+			return const_view<_ViewRows, _ViewColumns, const _Self>(*this, row, column);
+		}
+
+		template <
+			class _ViewRows,
+			class _ViewColumns>
+		typename const_view<_ViewRows, _ViewColumns, const _Self> make_view(
+			const size_t row,
+			const size_t column) const
+		{
+			return this->make_const_view<_ViewRows, _ViewColumns>(row, column);
+		}
+
+		template <
+			class _ViewRows,
+			class _ViewColumns>
+		typename view<_ViewRows, _ViewColumns, _Self> make_view(
+			const size_t row,
+			const size_t column)
+		{
+			static_assert(_ViewRows::rank <= _Self::row_rank, "Too many rows in view.");
+			static_assert(_ViewColumns::rank <= _Self::column_rank, "Too many columns in view.");
+
+			if (column >= _Self::column_rank)
+				throw std::invalid_argument("Base column index is too large for the view.");
+			if (row >= _Self::row_rank)
+				throw std::invalid_argument("Base row index is too large for the view.");
+
+			return view<_ViewRows, _ViewColumns, _Self>(*this, row, column);
+		}
+
+		const_row_iterator row_begin(const size_t row) const
+		{
+			return const_row_iterator(*this, row);
+		}
+
+		const_row_iterator row_end(const size_t row) const
+		{
+			const_row_iterator it(*this, row);
+			it += _Self::column_rank;
+			return it;
+		}
+
+		const_row_iterator crow_begin(const size_t row) const
+		{
+			return (((const _Self *)this)->row_begin(row));
+		}
+
+		const_row_iterator crow_end(const size_t row) const
+		{
+			return (((const _Self *)this)->row_end(row));
+		}
+			
+		row_iterator row_begin(const size_t row)
+		{
+			return row_iterator(*this, row);
+		}
+
+		row_iterator row_end(const size_t row)
+		{
+			row_iterator it(*this, row);
+			it += _Self::column_rank;
+			return it;
+		}
+
+		template <class A, class B>
+		typename matrix<A, B> resize() const
+		{
+			matrix<A, B> result;
+
+			if (false == this->empty())
+			{
+				const size_t rows = typename _min_rank<A, row_dimension>::type::rank;
+				const size_t columns = typename _min_rank<B, column_dimension>::type::rank;
+
+				for (size_t row = 0; row < rows; ++row)
+				{
+					for (size_t col = 0; col < columns; ++col)
+					{
+						result(row, col) = (*this)(row, col);
 					}
 				}
 			}
@@ -187,13 +730,13 @@ namespace algebra
 					result.m_values.begin(),
 					result.m_values.end(),
 					result.m_values.begin(),
-					[](const double& d) { return -d; });
+					[](const value_type& d) { return -d; });
 			}
 
 			return result;
 		}
 
-		static _Self multiply(const _Self& m, const double C)
+		static _Self multiply(const _Self& m, const value_type C)
 		{
 			_Self result;
 
@@ -204,21 +747,21 @@ namespace algebra
 					result.m_values.begin(),
 					result.m_values.end(),
 					result.m_values.begin(),
-					[C](const double& d) { return d * C; });
+					[C](const value_type& d) { return d * C; });
 			}
 
 			return result;
 		}
 
 		static _Self random(
-			const double min = 0.0,
-			const double max = 1.0)
+			const value_type min = 0.0,
+			const value_type max = 1.0)
 		{
 			_Self result;
 
 			std::random_device rd;
 			std::mt19937 gen(rd());
-			std::uniform_real_distribution<> distr(min, max);
+			std::uniform_real_distribution<value_type> distr(min, max);
 
 			result.m_values.reserve(_Self::row_rank * _Self::column_rank);
 			for (size_t i = 0; i < _Self::row_rank * _Self::column_rank; i++)
@@ -230,7 +773,7 @@ namespace algebra
 		}
 
 	private:
-		std::vector<double> m_values;
+		std::vector<value_type> m_values;
 	};
 
 	template <class M, class N, class P>
@@ -244,7 +787,7 @@ namespace algebra
 			{
 				for (size_t col = 0; col < P::rank; ++col)
 				{
-					double cell = 0.0;
+					typename matrix<M, N>::value_type cell = number_traits<typename matrix<M, N>::value_type>::zero();
 
 					for (size_t i = 0; i < N::rank; ++i)
 					{
@@ -298,7 +841,7 @@ namespace algebra
 		{
 			for (size_t row = 0; row < M::rank; ++row)
 			{
-				double cell = 0.0;
+				typename matrix<M, N>::value_type cell = number_traits<typename matrix<M, N>::value_type>::zero();
 				for (size_t col = 0; col < N::rank; ++col)
 				{
 					cell += m(row, col) * v(col);
@@ -309,6 +852,22 @@ namespace algebra
 		}
 
 		return result;
+	}
+
+	template <class A, class B>
+	bool operator== (
+		const matrix<A, B>& m1,
+		const matrix<A, B>& m2)
+	{
+		return m1.equals(m2);
+	}
+
+	template <class A, class B>
+	bool operator!= (
+		const matrix<A, B>& m1,
+		const matrix<A, B>& m2)
+	{
+		return !(m1 == m2);
 	}
 
 	// Computation for cost of multiplication of two matrices.

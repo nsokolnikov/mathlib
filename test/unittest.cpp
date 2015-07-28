@@ -12,6 +12,9 @@ void run_tests()
 		test_expressions();
 		test_vector_expressions();
 		test_vector();
+		test_row_iterators();
+
+		test_solve();
 
 		test::log("===========================================");
 		test::log("All unit tests PASS");

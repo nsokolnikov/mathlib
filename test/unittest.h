@@ -171,4 +171,7 @@ void test_expressions();
 void test_vector();
 void test_vector_expressions();
 
+void test_row_iterators();
+void test_solve();
+
 void run_tests();

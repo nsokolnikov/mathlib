@@ -147,6 +147,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\algorithm.h" />
     <ClInclude Include="..\src\declaration.h" />
     <ClInclude Include="..\src\expression.h" />
     <ClInclude Include="..\src\matrix.h" />
@@ -156,7 +157,9 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\test\algorithm.cpp" />
     <ClCompile Include="..\test\expression.cpp" />
+    <ClCompile Include="..\test\iterators.cpp" />
     <ClCompile Include="..\test\unittest.cpp" />
     <ClCompile Include="..\test\vector.cpp" />
     <ClCompile Include="MathLib.cpp" />
