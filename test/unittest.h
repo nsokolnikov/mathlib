@@ -171,4 +171,11 @@ void test_expressions();
 void test_vector();
 void test_vector_expressions();
 
+void test_view();
+
+void test_matrix_row_iterators();
+void test_matrix_view_row_iterators();
+
+void test_solve();
+
 void run_tests();
