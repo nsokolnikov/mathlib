@@ -10,9 +10,14 @@ void run_tests()
 	try
 	{
 		test_expressions();
+
 		test_vector_expressions();
 		test_vector();
-		test_row_iterators();
+
+		test_view();
+
+		test_matrix_row_iterators();
+		test_matrix_view_row_iterators();
 
 		test_solve();
 

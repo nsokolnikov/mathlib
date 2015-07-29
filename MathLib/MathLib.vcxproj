@@ -157,6 +157,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\view.cpp" />
     <ClCompile Include="..\test\algorithm.cpp" />
     <ClCompile Include="..\test\expression.cpp" />
     <ClCompile Include="..\test\iterators.cpp" />

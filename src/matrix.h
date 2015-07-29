@@ -317,7 +317,7 @@ namespace algebra
 		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimension.");
 
 		typedef typename _Matrix::value_type value_type;
-		typedef typename const_row_iterator<_Self> const_row_iterator;
+		typedef typename const_row_iterator<const _Self> const_row_iterator;
 
 		const_view(_Matrix& matrix, const size_t row, const size_t column)
 			: m_pMatrix(std::addressof(matrix)), m_Row(row), m_Column(column)
@@ -337,12 +337,7 @@ namespace algebra
 			: m_pMatrix(other.m_pMatrix), m_Row(other.m_Row), m_Column(other.m_Column)
 		{}
 
-		_Self operator=(const _Self& other)
-		{
-			m_pMatrix = other.m_pMatrix;
-			m_Row = other.m_Row;
-			m_Column = other.m_Column;
-		}
+		_Self operator=(const _Self& other) = delete;
 
 		const value_type& operator() (
 			const size_t row,
@@ -386,7 +381,9 @@ namespace algebra
 		static const size_t column_rank = column_dimension::rank;
 
 		typedef typename _Matrix::value_type value_type;
+
 		typedef typename row_iterator<_Self> row_iterator;
+		typedef typename algebra::const_row_iterator<const _Self> const_row_iterator;
 
 		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimension.");
 		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimension.");
@@ -415,6 +412,18 @@ namespace algebra
 		row_iterator row_end(const size_t row)
 		{
 			row_iterator it(*this, row);
+			it += _Self::column_rank;
+			return it;
+		}
+
+		const_row_iterator crow_begin(const size_t row) const
+		{
+			return const_row_iterator(*this, row);
+		}
+
+		const_row_iterator crow_end(const size_t row) const
+		{
+			const_row_iterator it(*this, row);
 			it += _Self::column_rank;
 			return it;
 		}
