@@ -16,6 +16,7 @@ namespace algebra
 		typedef typename D dimension;
 		static const size_t rank = dimension::rank;
 		typedef vector<D> _Self;
+		typedef double value_type;
 
 		static_assert(std::is_base_of<algebra::dimension<rank>, D>::value, "Type parameter D must be a dimension.");
 
@@ -24,7 +25,7 @@ namespace algebra
 		{
 		}
 
-		vector(std::initializer_list<double> data)
+		vector(std::initializer_list<value_type> data)
 			: m_values()
 		{
 			if (data.size() != _Self::rank)
@@ -57,28 +58,28 @@ namespace algebra
 			return (*this);
 		}
 
-		double& operator() (const size_t index)
+		value_type& operator() (const size_t index)
 		{
 			if (index >= _Self::rank)
 				throw std::invalid_argument("Index out of range.");
 
 			if (m_values.size() == 0)
 			{
-				const double zero = 0.0;
+				const value_type zero = number_traits<value_type>::zero();
 				m_values.assign(_Self::rank, zero);
 			}
 
 			return m_values[index];
 		}
 
-		const double& operator() (const size_t index) const
+		const value_type& operator() (const size_t index) const
 		{
 			if (index >= _Self::rank)
 				throw std::invalid_argument("Index out of range.");
 
 			if (m_values.size() == 0)
 			{
-				static const double zero = 0.0;
+				static const value_type zero = number_traits<value_type>::zero();
 				return zero;
 			}
 
@@ -89,7 +90,7 @@ namespace algebra
 		{
 			for (size_t i = 0; i < _Self::rank; ++i)
 			{
-				if ((*this)(i) != other(i))
+				if (false == number_traits<value_type>::equals((*this)(i), other(i)))
 					return false;
 			}
 
@@ -102,7 +103,7 @@ namespace algebra
 		}
 
 	private:
-		std::vector<double> m_values;
+		std::vector<value_type> m_values;
 	};
 
 	template <class D>

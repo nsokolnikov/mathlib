@@ -44,4 +44,35 @@ namespace algebra
 		static const size_t cost = type::cost;
 	};
 
+	template <class _Number>
+	struct number_traits
+	{
+		static bool equals(const _Number& n1, const _Number& n2)
+		{
+			return (n1 == n2);
+		}
+
+		static const _Number zero()
+		{
+			return 0;
+		}
+	};
+
+	template<>
+	struct number_traits<double>
+	{
+		static bool equals(
+			const double& d1,
+			const double& d2)
+		{
+			const double error = 1.0e-10;
+
+			return std::abs(d1 - d2) < error;
+		}
+
+		static const double zero()
+		{
+			return 0.0;
+		}
+	};
 }
