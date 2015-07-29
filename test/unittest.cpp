@@ -12,6 +12,7 @@ void run_tests()
 		test_expressions();
 		test_vector_expressions();
 		test_vector();
+		test_matrices();
 
 		test::log("===========================================");
 		test::log("All unit tests PASS");

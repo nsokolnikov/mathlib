@@ -170,5 +170,6 @@ void test_expressions();
 
 void test_vector();
 void test_vector_expressions();
+void test_matrices();
 
 void run_tests();
