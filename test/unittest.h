@@ -20,7 +20,7 @@ public:
 		: std::exception(message) {}
 };
 
-template <const bool Verbose = false>
+template <const bool Verbose = true>
 class _Test
 {
 private:
