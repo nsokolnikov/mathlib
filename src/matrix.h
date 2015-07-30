@@ -496,7 +496,7 @@ namespace algebra
 			for (auto it = m_values.begin(), end = m_values.end(), oit = other.m_values.begin();
 				it != end; ++it, ++oit)
 			{
-				if (false == double_equals(*it, *oit))
+				if (false == number_traits<value_type>::equals(*it, *oit))
 					return false;
 			}
 
