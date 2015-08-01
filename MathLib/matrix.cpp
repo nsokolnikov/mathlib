@@ -23,21 +23,55 @@ void test_matrices() {
 	auto m1 = algebra::matrix<D3, D3>::random(0, 10);
 
 	auto m2 = algebra::matrix<D3, D3>();
+
 	algebra::matrix<D3, D3> m3{ 
 		10, 20, 30, 
 		40, 50, 60,
 		70, 80, 90 };
 
-	test::assert(m3(0, 0) == 10, "Test Failed: matrix random access");
+	algebra::matrix<D3, D3> m4{
+		10, 20, 30,
+		40, 50, 60,
+		70, 80, 90 };
 
-//	algebra::matrix<D4, D5> m = {
-//		11, 12, 13, 14, 15,
-//		21, 22, 23, 24, 25,
-//		31, 32, 33, 34, 35,
-//		41, 42, 43, 44, 45
-//	};
+	algebra::matrix<D3, D3> m5{
+		10, 40, 70,
+		20, 50, 80,
+		30, 60, 90
+	};
 
-//	m.column_rank;
+	algebra::matrix<D3, D3> m6{
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0
+	};
+
+	algebra::matrix<D3, D3> m7{
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1
+	};
+
+	algebra::matrix<D3, D3> m8{
+		1, 1, 1,
+		1, 1, 1,
+		1, 1, 1
+	};
 	
+	test::assert(m3 == m3, "Test failed: equality of the same matrix");
+
+	test::assert(m3(0, 0) == 10, "Test Failed: matrix random access");
+	test::assert(m3 == m4, "Test failed: equality by value");
+
+	test::assert(m3 == m5.transpose(), "Test failed: Transpose");
+	test::assert(m3 - m3 == m6, "Test failed: Matrix subtraction");
+	test::assert(m3 + m6 == m3, "Test failed: Matrix addition");
+	
+	test::assert(m7 * m5 == m5, "Test failed: Matrix multiplication");
+
+	test::assert(m4 * 1 == m3, "Test failed: Multiply matrix by value");
+
+
+
 	sc.pass();
 }

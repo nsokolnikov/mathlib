@@ -20,7 +20,7 @@ public:
 		: std::exception(message) {}
 };
 
-template <const bool Verbose = true>
+template <const bool Verbose = false>
 class _Test
 {
 private:
@@ -39,7 +39,8 @@ public:
 	//
 	static void log(const char* message)
 	{
-		std::cout << message << "\r\n";
+		std::cout << message << "\r" << std::endl;
+		std::cout.flush();
 	}
 
 	// Utility function to log a verbose message from a test scenario.
@@ -49,6 +50,7 @@ public:
 	//
 	static void verbose(const char* message)
 	{
+		std::cout.flush();
 		if (is_verbose())
 		{
 			log(message);
@@ -118,7 +120,7 @@ public:
 };
 
 // Default to no verbose logging. Change that to true for debugging.
-typedef _Test<false> test;
+typedef _Test<true> test;
 
 // Utility struct to automatically check for a test scenario success.
 //
