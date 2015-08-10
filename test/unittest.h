@@ -50,7 +50,6 @@ public:
 	//
 	static void verbose(const char* message)
 	{
-		std::cout.flush();
 		if (is_verbose())
 		{
 			log(message);

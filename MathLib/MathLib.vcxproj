@@ -160,11 +160,11 @@
     <ClCompile Include="..\test\algorithm.cpp" />
     <ClCompile Include="..\test\expression.cpp" />
     <ClCompile Include="..\test\iterators.cpp" />
+    <ClCompile Include="..\test\matrix.cpp" />
     <ClCompile Include="..\test\unittest.cpp" />
     <ClCompile Include="..\test\vector.cpp" />
     <ClCompile Include="..\test\view.cpp" />
     <ClCompile Include="MathLib.cpp" />
-    <ClCompile Include="matrix.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

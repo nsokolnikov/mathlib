@@ -57,6 +57,13 @@ void test_matrices() {
 		1, 1, 1,
 		1, 1, 1
 	};
+
+	algebra::matrix<D3, D4> m9{
+		1, 1, 1, 0,
+		1, 1, 1, 0,
+		1, 1, 1, 0,
+
+	};
 	
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
 
@@ -70,8 +77,10 @@ void test_matrices() {
 	test::assert(m7 * m5 == m5, "Test failed: Matrix multiplication");
 
 	test::assert(m4 * 1 == m3, "Test failed: Multiply matrix by value");
+	
+	auto m10 = m8.resize<D3, D4>();
 
-
+	test::assert(m10 == m9, "Test failed: resize");
 
 	sc.pass();
 }
