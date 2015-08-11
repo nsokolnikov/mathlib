@@ -15,7 +15,8 @@ namespace algebra
 	{
 		typedef typename std::conditional<(A::rank <= B::rank), A, B>::type type;
 	};
-
+	
+	//row iterator
 	template <class _Matrix>
 	class const_row_iterator
 	{
@@ -93,7 +94,7 @@ namespace algebra
 		}
 
 		bool operator==(const _Self& other) const
-		{	
+		{
 			return (this->m_pMatrix == other.m_pMatrix
 				&& this->m_row == other.m_row
 				&& this->m_index == other.m_index);
@@ -107,7 +108,7 @@ namespace algebra
 		bool operator<(const _Self& other) const
 		{
 			return (this->m_pMatrix < other.m_pMatrix
-				|| (this->m_pMatrix == other.m_pMatrix 
+				|| (this->m_pMatrix == other.m_pMatrix
 					&& (this->m_row < other.m_row
 						|| (this->m_row == other.m_row
 							&& this->m_index < other.m_index))));
@@ -183,6 +184,8 @@ namespace algebra
 		size_t m_row;
 		size_t m_index;
 	};
+	
+
 
 	// add offset to iterator
 	template<class _Matrix> inline
