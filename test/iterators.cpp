@@ -233,3 +233,126 @@ void test_matrix_view_row_iterators()
 
 	sc.pass();
 }
+//column iterator tests placeholder
+/*
+void test_matrix_view_column_iterators()
+{
+	scenario sc("View Column Iterators Test");
+
+	typedef algebra::matrix<D4, D5> _Matrix;
+	typedef algebra::const_view<D3, D3, const _Matrix> _ConstView;
+	typedef algebra::view<D3, D3, _Matrix> _View;
+
+	_Matrix m = {
+		11, 12, 13, 14, 15,
+		21, 22, 23, 24, 25,
+		31, 32, 33, 34, 35,
+		41, 42, 43, 44, 45
+	};
+
+	_ConstView cv = m.make_const_view<D3, D3>(1, 2);
+	_View v = m.make_view<D3, D3>(0, 1);
+
+	{
+		test::verbose("Constructor tests: const view: negative");
+		test::check_exception<std::invalid_argument>(
+			[&cv]() { algebra::const_column_iterator<_ConstView> it(cv, 4);  },
+			"Invalid column");
+		//test::check_exception<std::invalid_argument>(
+		//	[&cv]() { algebra::column_iterator<_ConstView> it(cv, 4);  },
+		//	"Invalid column");
+	}
+
+	{
+		test::verbose("Constructor tests: view: negative");
+		test::check_exception<std::invalid_argument>(
+			[&v]() { algebra::const_column_iterator<_View> it(v, 4);  },
+			"Invalid column");
+		//test::check_exception<std::invalid_argument>(
+		//	[&v]() { algebra::column_iterator<_View> it(v, 4);  },
+		//	"Invalid column");
+	}
+
+	{
+		test::verbose("Constructor tests: const view: positive");
+
+		algebra::const_column_iterator<_ConstView> cit1(cv, 0);
+		algebra::const_column_iterator<_ConstView> cit2(cv, 1);
+		algebra::const_column_iterator<_ConstView> cit3(cv, 2);
+
+		//algebra::column_iterator<_ConstView> it1(cv, 0);
+		//algebra::column_iterator<_ConstView> it2(cv, 1);
+		//algebra::column_iterator<_ConstView> it3(cv, 2);
+
+		auto ccopy = cit2;
+		auto copy = it2;
+	}
+
+	{
+		test::verbose("Constructor tests: view: positive");
+
+		algebra::const_column_iterator<_View> cit1(v, 0);
+		algebra::const_column_iterator<_View> cit2(v, 1);
+		algebra::const_column_iterator<_View> cit3(v, 2);
+
+		//algebra::column_iterator<_View> it1(v, 0);
+		//algebra::column_iterator<_View> it2(v, 1);
+		//algebra::column_iterator<_View> it3(v, 2);
+
+		auto ccopy = cit2;
+//		auto copy = it2;
+	}
+
+	test::verbose("Constant view iterators: const view");
+	test_iterator_operators(cv.column_begin(0), cv.column_end(0), _ConstView::column_rank);
+
+	test::verbose("Constant view iterators: view");
+	test_iterator_operators(v.column_begin(0), v.column_end(0), _View::column_rank);
+
+//	test::verbose("Writable iterators: view");
+//	test_iterator_operators(v.column_begin(0), v.column_end(0), _View::column_rank);
+
+	test::verbose("Dereference Operators: const view");
+	for (size_t column = 0; column < _ConstView::column_rank; ++column)
+	{
+		for (size_t col = 0; col < _ConstView::column_rank; ++col)
+		{
+			std::stringstream test;
+			test << " for row=" << row << "; col=" << col;
+			test::assert(m(row + 1, col + 2) == *(cv.row_begin(row) + col), ("Test Failed: m(row + 1, col + 2) == *(cv.row_begin(row) + col)" + test.str()).c_str());
+		}
+
+		test::check_exception<std::invalid_argument>(
+			[&cv, row]() { *(cv.row_end(row));  },
+			"Reading past row end: const iterator");
+	}
+
+	test::verbose("Dereference Operators: view");
+	for (size_t row = 0; row < _View::row_rank; ++row)
+	{
+		for (size_t col = 0; col < _View::column_rank; ++col)
+		{
+			std::stringstream test;
+			test << " for row=" << row << "; col=" << col;
+			test::assert(m(row, col + 1) == *(v.row_begin(row) + col), ("Test Failed: m(row, col + 1) == *(v.row_begin(row) + col))" + test.str()).c_str());
+			test::assert(m(row, col + 1) == *(v.crow_begin(row) + col), ("Test Failed: m(row, col + 1) == *(v.crow_begin(row) + col)" + test.str()).c_str());
+
+			double value = row * 100.0 + col;
+			test::assert(value == (*(v.row_begin(row) + col) = value), ("Test Failed: value == (*(v.row_begin(row) + col) = value)" + test.str()).c_str());
+			test::assert(m(row, col + 1) == value, ("Test Failed: m(row, col + 1) == value" + test.str()).c_str());
+		}
+
+		test::check_exception<std::invalid_argument>(
+			[&v, row]() { *(v.crow_end(row));  },
+			"Reading past row end: const iterator");
+		test::check_exception<std::invalid_argument>(
+			[&v, row]() { *(v.row_end(row));  },
+			"Reading past row end: iterator");
+		test::check_exception<std::invalid_argument>(
+			[&v, row]() { *(v.row_end(row)) = -10.0;  },
+			"Writing past row end: iterator");
+	}
+
+	sc.pass();
+}
+*/
