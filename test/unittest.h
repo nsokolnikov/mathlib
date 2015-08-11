@@ -39,7 +39,8 @@ public:
 	//
 	static void log(const char* message)
 	{
-		std::cout << message << "\r\n";
+		std::cout << message << "\r" << std::endl;
+		std::cout.flush();
 	}
 
 	// Utility function to log a verbose message from a test scenario.
@@ -120,7 +121,7 @@ public:
 };
 
 // Default to no verbose logging. Change that to true for debugging.
-typedef _Test<false> test;
+typedef _Test<true> test;
 
 // Utility struct to automatically check for a test scenario success.
 //
@@ -173,6 +174,7 @@ void test_expressions();
 
 void test_vector();
 void test_vector_expressions();
+void test_matrices();
 
 void test_view();
 
