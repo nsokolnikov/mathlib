@@ -503,6 +503,7 @@ namespace algebra
 			return true;
 		}
 
+
 		_Self& operator=(const _Self& other)
 		{
 			if (this != std::addressof(other))
