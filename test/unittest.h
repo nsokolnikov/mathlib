@@ -177,6 +177,7 @@ void test_view();
 
 void test_matrix_row_iterators();
 void test_matrix_view_row_iterators();
+//void test_matrix_view_column_iterators();
 
 void test_solve();
 
