@@ -19,7 +19,8 @@ void test_iterator_operators(
 	test::assert(it != (it2 + 1), "Test Failed: it <= (it2 + 1)");
 
 	test::assert((it + 1) > it2, "Test Failed: (it + 1) > it2");
-//	test::assert((1 + it) >= it2, "Test Failed: (it + 1) >= it2");
+	//determine why (1 + it) doesn't compile later
+	test::assert((it + 1) >= it2, "Test Failed: (it + 1) >= it2");
 
 	test::assert(it <= end - 2, "Test Failed: it <= end - 2");
 
@@ -304,7 +305,6 @@ void test_matrix_view_column_iterators()
 
 	test::verbose("Constant view iterators: const view");
 	test_iterator_operators(cv.column_begin(0), cv.column_end(0), _ConstView::row_rank);
-	/*
 
 	test::verbose("Constant view iterators: view");
 	test_iterator_operators(v.column_begin(0), v.column_end(0), _View::column_rank);
@@ -326,6 +326,7 @@ void test_matrix_view_column_iterators()
 			"Reading past column end: const iterator");
 		}
 	}
+	/*
 	/*
 	test::verbose("Dereference Operators: view");
 	for (size_t row = 0; row < _View::row_rank; ++row)
