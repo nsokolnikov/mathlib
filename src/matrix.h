@@ -366,6 +366,15 @@ namespace algebra
 		return (right += offset);
 	}
 
+	// add offset to iterator
+	template<class _Matrix> inline
+		const_column_iterator<_Matrix> operator+(
+			typename const_column_iterator<_Matrix>::difference_type offset,
+			const_column_iterator<_Matrix> right)
+	{
+		return (right += offset);
+	}
+
 	template <class _Matrix>
 	class row_iterator : public const_row_iterator<_Matrix>
 	{
@@ -463,6 +472,16 @@ namespace algebra
 	{
 		return (right += offset);
 	}
+
+	// add offset to iterator
+	//row_iterator unimplemented
+	/*template<class _Matrix> inline
+		row_iterator<_Matrix> operator+(
+			typename row_iterator<_Matrix>::difference_type offset,
+			row_iterator<_Matrix> right)
+	{
+		return (right += offset);
+	}*/
 
 	template<class _Matrix>
 	struct std::_Is_checked_helper<typename const_row_iterator<_Matrix> >
