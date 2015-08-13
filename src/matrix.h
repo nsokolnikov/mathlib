@@ -21,7 +21,7 @@ namespace algebra
 	class const_column_iterator
 	{
 	public:
-		typedef typename _Matrix::column_dimension row_dimension;
+		typedef typename _Matrix::row_dimension row_dimension;
 		static const size_t row_rank = row_dimension::rank;
 		typedef const_column_iterator<_Matrix> _Self;
 
@@ -35,7 +35,7 @@ namespace algebra
 		const_column_iterator(_Matrix& matrix, const size_t column)
 			: m_pMatrix(std::addressof(matrix)), m_column(column), m_index(0)
 		{
-			if (m_column >= _Matrix::row_rank)
+			if (m_column >= _Matrix::column_rank)
 				throw std::invalid_argument("Column index is out of range.");
 		}
 
@@ -105,7 +105,6 @@ namespace algebra
 			return (!(*this == other));
 		}
 
-		//something is wrong here
 		bool operator<(const _Self& other) const
 		{
 			return (this->m_pMatrix < other.m_pMatrix
@@ -602,6 +601,7 @@ namespace algebra
 			return it;
 		}
 
+
 		const_row_iterator crow_begin(const size_t row) const
 		{
 			return const_row_iterator(*this, row);
@@ -613,6 +613,19 @@ namespace algebra
 			it += _Self::column_rank;
 			return it;
 		}
+
+		const_column_iterator ccolumn_begin(const size_t column) const
+		{
+			return const_column_iterator(*this, column);
+		}
+
+		const_column_iterator ccolumn_end(const size_t column) const
+		{
+			const_column_iterator it(*this, column);
+			it += _Self::row_rank;
+			return it;
+		}
+
 	};
 
 	template <class M, class N>
@@ -633,6 +646,9 @@ namespace algebra
 		typedef double value_type;
 		typedef typename const_row_iterator<const _Self> const_row_iterator;
 		typedef typename row_iterator<_Self> row_iterator;
+		typedef typename const_column_iterator<const _Self> const_column_iterator;
+//		typedef typename column_iterator<_Self> column_iterator;
+
 
 		matrix()
 			: m_values()
@@ -809,6 +825,42 @@ namespace algebra
 
 			return view<_ViewRows, _ViewColumns, _Self>(*this, row, column);
 		}
+		
+		const_column_iterator column_begin(const size_t column) const
+		{
+			return const_column_iterator(*this, column);
+		}
+		
+		const_column_iterator column_end(const size_t column) const
+		{
+			const_column_iterator it(*this, column);
+			it += _Self::column_rank;
+			return it;
+		}
+
+		const_column_iterator ccolumn_begin(const size_t column) const
+		{
+			return (((const _Self *)this)->column_begin(column));
+		}
+
+		const_column_iterator ccolumn_end(const size_t column) const
+		{
+			return (((const _Self *)this)->column_end(column));
+		}
+			/* //column_iterator is unimplemented
+			column_iterator(const size_t row)
+			{
+				return column_iterator(*this, row);
+			}
+
+			column_iterator row_end(const size_t row)
+			{
+				column_iterator it(*this, row);
+				it += _Self::column_rank;
+				return it;
+			}
+			*/
+		
 
 		const_row_iterator row_begin(const size_t row) const
 		{
