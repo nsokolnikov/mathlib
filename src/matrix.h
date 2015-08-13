@@ -781,11 +781,19 @@ namespace algebra
 		{
 		}
 
+		matrix(std::vector<value_type> data)
+			: m_values()
+		{
+			if (data.size() != _Self::column_rank * _Self::row_rank)
+				throw std::invalid_argument("Vector size does not match matrix rank.");
+
+			m_values.assign(data.begin(), data.end());
+		}
+
 		matrix(const matrix& other)
 			: m_values(other.m_values)
 		{
 		}
-
 		matrix(matrix&& other)
 			: m_values(std::move(other.m_values))
 		{}
@@ -798,6 +806,7 @@ namespace algebra
 
 			m_values.assign(data.begin(), data.end());
 		}
+		
 
 		bool empty() const
 		{

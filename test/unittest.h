@@ -12,7 +12,7 @@ struct D7 : public algebra::dimension<7> {};
 struct D8 : public algebra::dimension<8> {};
 struct D9 : public algebra::dimension<9> {};
 struct D10 : public algebra::dimension<10> {};
-
+struct D28 : public algebra::dimension<28> {};
 class test_exception : public std::exception
 {
 public:
