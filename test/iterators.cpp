@@ -19,8 +19,7 @@ void test_iterator_operators(
 	test::assert(it != (it2 + 1), "Test Failed: it <= (it2 + 1)");
 
 	test::assert((it + 1) > it2, "Test Failed: (it + 1) > it2");
-	//determine why (1 + it) doesn't compile later
-	test::assert((it + 1) >= it2, "Test Failed: (it + 1) >= it2");
+	test::assert((1 + it) >= it2, "Test Failed: (it + 1) >= it2");
 
 	test::assert(it <= end - 2, "Test Failed: it <= end - 2");
 
