@@ -464,6 +464,96 @@ namespace algebra
 		}
 	};
 
+	template <class _Matrix>
+	class column_iterator : public const_column_iterator<_Matrix>
+	{
+	public:
+		typedef typename _Matrix::row_dimension row_dimension;
+		static const size_t row_rank = row_dimension::rank;
+		typedef const_column_iterator<_Matrix> _Base;
+		typedef column_iterator<_Matrix> _Self;
+
+		typedef typename _Matrix::value_type value_type;
+		typedef typename value_type* pointer;
+		typedef typename value_type& reference;
+
+		column_iterator(_Matrix& matrix, const size_t row)
+			: _Base(matrix, row)
+		{}
+
+		column_iterator(const _Self& other)
+			: _Base(other)
+		{}
+
+		reference operator*() const
+		{
+			return (reference)**((_Base*)this);
+		}
+
+		// postincrement
+		_Self operator++(int)
+		{
+			_Self t = *this;
+			this->_Increment();
+			return t;
+		}
+
+		// predecrement
+		_Self& operator++()
+		{
+			this->_Increment();
+			return (*this);
+		}
+
+		// postdecrement
+		_Self operator--(int)
+		{
+			_Self t = *this;
+			this->_Decrement();
+			return t;
+		}
+
+		// predecrement
+		_Self& operator--()
+		{
+			this->_Decrement();
+			return (*this);
+		}
+
+		_Self& operator+=(difference_type offset)
+		{
+			this->_IncrementBy(offset);
+			return (*this);
+		}
+
+		_Self& operator-=(difference_type offset)
+		{
+			this->_IncrementBy(-offset);
+			return (*this);
+		}
+
+		// return this + integer
+		_Self operator+(difference_type offset) const
+		{
+			_Self t = *this;
+			return (t += offset);
+		}
+
+		// return this - integer
+		_Self operator-(difference_type offset) const
+		{
+			_Self t = *this;
+			return (t -= offset);
+		}
+
+		// return difference of iterators
+		difference_type operator-(const _Self& right) const
+		{
+			return (this->m_index - right.m_index);
+		}
+	};
+
+
 	// add offset to iterator
 	template<class _Matrix> inline
 		row_iterator<_Matrix> operator+(
@@ -474,14 +564,14 @@ namespace algebra
 	}
 
 	// add offset to iterator
-	//row_iterator unimplemented
-	/*template<class _Matrix> inline
-		row_iterator<_Matrix> operator+(
-			typename row_iterator<_Matrix>::difference_type offset,
-			row_iterator<_Matrix> right)
+
+	template<class _Matrix> inline
+		column_iterator<_Matrix> operator+(
+			typename column_iterator<_Matrix>::difference_type offset,
+			column_iterator<_Matrix> right)
 	{
 		return (right += offset);
-	}*/
+	}
 
 	template<class _Matrix>
 	struct std::_Is_checked_helper<typename const_row_iterator<_Matrix> >
@@ -589,6 +679,11 @@ namespace algebra
 		typedef typename row_iterator<_Self> row_iterator;
 		typedef typename algebra::const_row_iterator<const _Self> const_row_iterator;
 
+		typedef typename column_iterator<_Self> column_iterator;
+		typedef typename algebra::const_column_iterator<const _Self> const_column_iterator;
+
+
+
 		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimension.");
 		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimension.");
 
@@ -617,6 +712,18 @@ namespace algebra
 		{
 			row_iterator it(*this, row);
 			it += _Self::column_rank;
+			return it;
+		}
+
+		column_iterator column_begin(const size_t column)
+		{
+			return column_iterator(*this, column);
+		}
+
+		column_iterator column_end(const size_t column)
+		{
+			column_iterator it(*this, column);
+			it += _Self::row_rank;
 			return it;
 		}
 
@@ -666,7 +773,7 @@ namespace algebra
 		typedef typename const_row_iterator<const _Self> const_row_iterator;
 		typedef typename row_iterator<_Self> row_iterator;
 		typedef typename const_column_iterator<const _Self> const_column_iterator;
-//		typedef typename column_iterator<_Self> column_iterator;
+		typedef typename column_iterator<_Self> column_iterator;
 
 
 		matrix()
@@ -866,19 +973,19 @@ namespace algebra
 		{
 			return (((const _Self *)this)->column_end(column));
 		}
-			/* //column_iterator is unimplemented
-			column_iterator(const size_t row)
-			{
-				return column_iterator(*this, row);
-			}
 
-			column_iterator row_end(const size_t row)
-			{
-				column_iterator it(*this, row);
-				it += _Self::column_rank;
-				return it;
-			}
-			*/
+		column_iterator column_begin(const size_t column)
+		{
+			return column_iterator(*this, column);
+		}
+
+		column_iterator column_end(const size_t column)
+		{
+			column_iterator it(*this, column);
+			it += _Self::column_rank;
+			return it;
+		}
+			
 		
 
 		const_row_iterator row_begin(const size_t row) const
