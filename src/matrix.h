@@ -15,7 +15,7 @@ namespace algebra
 	{
 		typedef typename std::conditional<(A::rank <= B::rank), A, B>::type type;
 	};
-	
+
 	//column iterator
 	template <class _Matrix>
 	class const_column_iterator
@@ -354,14 +354,14 @@ namespace algebra
 		size_t m_row;
 		size_t m_index;
 	};
-	
+
 
 
 	// add offset to iterator
 	template<class _Matrix> inline
 		const_row_iterator<_Matrix> operator+(
-		typename const_row_iterator<_Matrix>::difference_type offset,
-		const_row_iterator<_Matrix> right)
+			typename const_row_iterator<_Matrix>::difference_type offset,
+			const_row_iterator<_Matrix> right)
 	{
 		return (right += offset);
 	}
@@ -557,8 +557,8 @@ namespace algebra
 	// add offset to iterator
 	template<class _Matrix> inline
 		row_iterator<_Matrix> operator+(
-		typename row_iterator<_Matrix>::difference_type offset,
-		row_iterator<_Matrix> right)
+			typename row_iterator<_Matrix>::difference_type offset,
+			row_iterator<_Matrix> right)
 	{
 		return (right += offset);
 	}
@@ -754,6 +754,27 @@ namespace algebra
 
 	};
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	template <class M, class N>
 	class matrix
 	{
@@ -806,7 +827,7 @@ namespace algebra
 
 			m_values.assign(data.begin(), data.end());
 		}
-		
+
 
 		bool empty() const
 		{
@@ -831,7 +852,7 @@ namespace algebra
 			}
 
 			for (auto it = m_values.begin(), end = m_values.end(), oit = other.m_values.begin();
-				it != end; ++it, ++oit)
+			it != end; ++it, ++oit)
 			{
 				if (false == number_traits<value_type>::equals(*it, *oit))
 					return false;
@@ -918,246 +939,261 @@ namespace algebra
 		template <
 			class _ViewRows,
 			class _ViewColumns>
-		typename const_view<_ViewRows, _ViewColumns, const _Self> make_const_view(
-			const size_t row,
-			const size_t column) const
-		{
-			static_assert(_ViewRows::rank <= _Self::row_rank, "Too many rows in view.");
-			static_assert(_ViewColumns::rank <= _Self::column_rank, "Too many columns in view.");
-
-			if (column >= _Self::column_rank)
-				throw std::invalid_argument("Base column index is too large for the view.");
-			if (row >= _Self::row_rank)
-				throw std::invalid_argument("Base row index is too large for the view.");
-
-			return const_view<_ViewRows, _ViewColumns, const _Self>(*this, row, column);
-		}
-
-		template <
-			class _ViewRows,
-			class _ViewColumns>
-		typename const_view<_ViewRows, _ViewColumns, const _Self> make_view(
-			const size_t row,
-			const size_t column) const
-		{
-			return this->make_const_view<_ViewRows, _ViewColumns>(row, column);
-		}
-
-		template <
-			class _ViewRows,
-			class _ViewColumns>
-		typename view<_ViewRows, _ViewColumns, _Self> make_view(
-			const size_t row,
-			const size_t column)
-		{
-			static_assert(_ViewRows::rank <= _Self::row_rank, "Too many rows in view.");
-			static_assert(_ViewColumns::rank <= _Self::column_rank, "Too many columns in view.");
-
-			if (column >= _Self::column_rank)
-				throw std::invalid_argument("Base column index is too large for the view.");
-			if (row >= _Self::row_rank)
-				throw std::invalid_argument("Base row index is too large for the view.");
-
-			return view<_ViewRows, _ViewColumns, _Self>(*this, row, column);
-		}
-		
-		const_column_iterator column_begin(const size_t column) const
-		{
-			return const_column_iterator(*this, column);
-		}
-		
-		const_column_iterator column_end(const size_t column) const
-		{
-			const_column_iterator it(*this, column);
-			it += _Self::column_rank;
-			return it;
-		}
-
-		const_column_iterator ccolumn_begin(const size_t column) const
-		{
-			return (((const _Self *)this)->column_begin(column));
-		}
-
-		const_column_iterator ccolumn_end(const size_t column) const
-		{
-			return (((const _Self *)this)->column_end(column));
-		}
-
-		column_iterator column_begin(const size_t column)
-		{
-			return column_iterator(*this, column);
-		}
-
-		column_iterator column_end(const size_t column)
-		{
-			column_iterator it(*this, column);
-			it += _Self::column_rank;
-			return it;
-		}
-			
-		
-
-		const_row_iterator row_begin(const size_t row) const
-		{
-			return const_row_iterator(*this, row);
-		}
-
-		const_row_iterator row_end(const size_t row) const
-		{
-			const_row_iterator it(*this, row);
-			it += _Self::column_rank;
-			return it;
-		}
-
-		const_row_iterator crow_begin(const size_t row) const
-		{
-			return (((const _Self *)this)->row_begin(row));
-		}
-
-		const_row_iterator crow_end(const size_t row) const
-		{
-			return (((const _Self *)this)->row_end(row));
-		}
-			
-		row_iterator row_begin(const size_t row)
-		{
-			return row_iterator(*this, row);
-		}
-
-		row_iterator row_end(const size_t row)
-		{
-			row_iterator it(*this, row);
-			it += _Self::column_rank;
-			return it;
-		}
-
-		template <class A, class B>
-		typename matrix<A, B> resize() const
-		{
-			matrix<A, B> result;
-
-			if (false == this->empty())
+				typename const_view<_ViewRows, _ViewColumns, const _Self> make_const_view(
+					const size_t row,
+					const size_t column) const
 			{
-				const size_t rows = typename _min_rank<A, row_dimension>::type::rank;
-				const size_t columns = typename _min_rank<B, column_dimension>::type::rank;
+				static_assert(_ViewRows::rank <= _Self::row_rank, "Too many rows in view.");
+				static_assert(_ViewColumns::rank <= _Self::column_rank, "Too many columns in view.");
 
-				for (size_t row = 0; row < rows; ++row)
+				if (column >= _Self::column_rank)
+					throw std::invalid_argument("Base column index is too large for the view.");
+				if (row >= _Self::row_rank)
+					throw std::invalid_argument("Base row index is too large for the view.");
+
+				return const_view<_ViewRows, _ViewColumns, const _Self>(*this, row, column);
+			}
+
+			template <
+				class _ViewRows,
+				class _ViewColumns>
+					typename const_view<_ViewRows, _ViewColumns, const _Self> make_view(
+						const size_t row,
+						const size_t column) const
 				{
-					for (size_t col = 0; col < columns; ++col)
+					return this->make_const_view<_ViewRows, _ViewColumns>(row, column);
+				}
+
+				template <
+					class _ViewRows,
+					class _ViewColumns>
+						typename view<_ViewRows, _ViewColumns, _Self> make_view(
+							const size_t row,
+							const size_t column)
 					{
-						result(row, col) = (*this)(row, col);
+						static_assert(_ViewRows::rank <= _Self::row_rank, "Too many rows in view.");
+						static_assert(_ViewColumns::rank <= _Self::column_rank, "Too many columns in view.");
+
+						if (column >= _Self::column_rank)
+							throw std::invalid_argument("Base column index is too large for the view.");
+						if (row >= _Self::row_rank)
+							throw std::invalid_argument("Base row index is too large for the view.");
+
+						return view<_ViewRows, _ViewColumns, _Self>(*this, row, column);
 					}
-				}
-			}
 
-			return result;
-		}
-
-		static _Self sum(const _Self& m1, const _Self& m2)
-		{
-			_Self result;
-
-			if (false == m1.empty() && false == m2.empty())
-			{
-				result.m_values.reserve(_Self::row_rank * _Self::column_rank);
-
-				auto im1 = m1.m_values.begin(),
-					im2 = m2.m_values.begin(),
-					im1end = m1.m_values.end();
-
-				for (; im1 < im1end; ++im1, ++im2)
-				{
-					result.m_values.push_back((*im1) + (*im2));
-				}
-			}
-			else if (false == m1.empty())
-			{
-				result = m1;
-			}
-			else if (false == m2.empty())
-			{
-				result = m2;
-			}
-
-			return result;
-		}
-
-		static _Self subtract(const _Self& m1, const _Self& m2)
-		{
-			_Self result;
-
-			if (false == m1.empty())
-			{
-				if (false == m2.empty())
-				{
-					result.m_values.reserve(_Self::row_rank * _Self::column_rank);
-
-					auto im1 = m1.m_values.begin(),
-						im2 = m2.m_values.begin(),
-						im1end = m1.m_values.end();
-
-					for (; im1 < im1end; ++im1, ++im2)
+					const_column_iterator column_begin(const size_t column) const
 					{
-						result.m_values.push_back((*im1) - (*im2));
+						return const_column_iterator(*this, column);
 					}
-				}
-				else
-				{
-					result = m1;
-				}
-			}
-			else if (false == m2.empty())
-			{
-				result = m2;
-				std::transform(
-					result.m_values.begin(),
-					result.m_values.end(),
-					result.m_values.begin(),
-					[](const value_type& d) { return -d; });
-			}
 
-			return result;
-		}
+					const_column_iterator column_end(const size_t column) const
+					{
+						const_column_iterator it(*this, column);
+						it += _Self::column_rank;
+						return it;
+					}
 
-		static _Self multiply(const _Self& m, const value_type C)
-		{
-			_Self result;
+					const_column_iterator ccolumn_begin(const size_t column) const
+					{
+						return (((const _Self *)this)->column_begin(column));
+					}
 
-			if (false == m.empty())
-			{
-				result = m;
-				std::transform(
-					result.m_values.begin(),
-					result.m_values.end(),
-					result.m_values.begin(),
-					[C](const value_type& d) { return d * C; });
-			}
+					const_column_iterator ccolumn_end(const size_t column) const
+					{
+						return (((const _Self *)this)->column_end(column));
+					}
 
-			return result;
-		}
+					column_iterator column_begin(const size_t column)
+					{
+						return column_iterator(*this, column);
+					}
 
-		static _Self random(
-			const value_type min = 0.0,
-			const value_type max = 1.0)
-		{
-			_Self result;
+					column_iterator column_end(const size_t column)
+					{
+						column_iterator it(*this, column);
+						it += _Self::column_rank;
+						return it;
+					}
 
-			std::random_device rd;
-			std::mt19937 gen(rd());
-			std::uniform_real_distribution<value_type> distr(min, max);
 
-			result.m_values.reserve(_Self::row_rank * _Self::column_rank);
-			for (size_t i = 0; i < _Self::row_rank * _Self::column_rank; i++)
-			{
-				result.m_values.push_back(distr(gen));
-			}
 
-			return result;
-		}
+					const_row_iterator row_begin(const size_t row) const
+					{
+						return const_row_iterator(*this, row);
+					}
+
+					const_row_iterator row_end(const size_t row) const
+					{
+						const_row_iterator it(*this, row);
+						it += _Self::column_rank;
+						return it;
+					}
+
+					const_row_iterator crow_begin(const size_t row) const
+					{
+						return (((const _Self *)this)->row_begin(row));
+					}
+
+					const_row_iterator crow_end(const size_t row) const
+					{
+						return (((const _Self *)this)->row_end(row));
+					}
+
+					row_iterator row_begin(const size_t row)
+					{
+						return row_iterator(*this, row);
+					}
+
+					row_iterator row_end(const size_t row)
+					{
+						row_iterator it(*this, row);
+						it += _Self::column_rank;
+						return it;
+					}
+
+					template <class A, class B>
+					typename matrix<A, B> resize() const
+					{
+						matrix<A, B> result;
+
+						if (false == this->empty())
+						{
+							const size_t rows = typename _min_rank<A, row_dimension>::type::rank;
+							const size_t columns = typename _min_rank<B, column_dimension>::type::rank;
+
+							for (size_t row = 0; row < rows; ++row)
+							{
+								for (size_t col = 0; col < columns; ++col)
+								{
+									result(row, col) = (*this)(row, col);
+								}
+							}
+						}
+
+						return result;
+					}
+
+					static _Self sum(const _Self& m1, const _Self& m2)
+					{
+						_Self result;
+
+						if (false == m1.empty() && false == m2.empty())
+						{
+							result.m_values.reserve(_Self::row_rank * _Self::column_rank);
+
+							auto im1 = m1.m_values.begin(),
+								im2 = m2.m_values.begin(),
+								im1end = m1.m_values.end();
+
+							for (; im1 < im1end; ++im1, ++im2)
+							{
+								result.m_values.push_back((*im1) + (*im2));
+							}
+						}
+						else if (false == m1.empty())
+						{
+							result = m1;
+						}
+						else if (false == m2.empty())
+						{
+							result = m2;
+						}
+
+						return result;
+					}
+
+					static _Self subtract(const _Self& m1, const _Self& m2)
+					{
+						_Self result;
+
+						if (false == m1.empty())
+						{
+							if (false == m2.empty())
+							{
+								result.m_values.reserve(_Self::row_rank * _Self::column_rank);
+
+								auto im1 = m1.m_values.begin(),
+									im2 = m2.m_values.begin(),
+									im1end = m1.m_values.end();
+
+								for (; im1 < im1end; ++im1, ++im2)
+								{
+									result.m_values.push_back((*im1) - (*im2));
+								}
+							}
+							else
+							{
+								result = m1;
+							}
+						}
+						else if (false == m2.empty())
+						{
+							result = m2;
+							std::transform(
+								result.m_values.begin(),
+								result.m_values.end(),
+								result.m_values.begin(),
+								[](const value_type& d) { return -d; });
+						}
+
+						return result;
+					}
+
+					static _Self multiply(const _Self& m, const value_type C)
+					{
+						_Self result;
+
+						if (false == m.empty())
+						{
+							result = m;
+							std::transform(
+								result.m_values.begin(),
+								result.m_values.end(),
+								result.m_values.begin(),
+								[C](const value_type& d) { return d * C; });
+						}
+
+						return result;
+					}
+
+					static _Self random(
+						const value_type min = 0.0,
+						const value_type max = 1.0)
+					{
+						_Self result;
+
+						std::random_device rd;
+						std::mt19937 gen(rd());
+						std::uniform_real_distribution<value_type> distr(min, max);
+
+						result.m_values.reserve(_Self::row_rank * _Self::column_rank);
+						for (size_t i = 0; i < _Self::row_rank * _Self::column_rank; i++)
+						{
+							result.m_values.push_back(distr(gen));
+						}
+
+						return result;
+					}
 
 	private:
 		std::vector<value_type> m_values;
 	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	template <class M, class N, class P>
 	matrix<M, P> operator* (const matrix<M, N>& m1, const matrix<N, P>& m2)
@@ -1263,9 +1299,9 @@ namespace algebra
 		typedef typename _2_matrix_mul_cost<A, B, C> type;
 
 		static matrix<A, C>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2)
 		{
 			return m1 * m2;
 		}
@@ -1291,10 +1327,10 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, D>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3)
 		{
 			return (m1 * m2) * m3;
 		}
@@ -1321,10 +1357,10 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, D>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3)
 		{
 			return m1 * (m2 * m3);
 		}
@@ -1367,11 +1403,11 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, E>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3,
-			const matrix<D, E>& m4)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3,
+				const matrix<D, E>& m4)
 		{
 			return m1 * temp_result::type::multiply(m2, m3, m4);
 		}
@@ -1396,11 +1432,11 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, E>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3,
-			const matrix<D, E>& m4)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3,
+				const matrix<D, E>& m4)
 		{
 			return temp_result::type::multiply(m1, m2, m3) * m4;
 		}
@@ -1426,11 +1462,11 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, E>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3,
-			const matrix<D, E>& m4)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3,
+				const matrix<D, E>& m4)
 		{
 			return (m1 * m2) * (m3 * m4);
 		}
@@ -1474,12 +1510,12 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, F>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3,
-			const matrix<D, E>& m4,
-			const matrix<E, F>& m5)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3,
+				const matrix<D, E>& m4,
+				const matrix<E, F>& m5)
 		{
 			return m1 * temp_result::type::multiply(m2, m3, m4, m5);
 		}
@@ -1504,12 +1540,12 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, F>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3,
-			const matrix<D, E>& m4,
-			const matrix<E, F>& m5)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3,
+				const matrix<D, E>& m4,
+				const matrix<E, F>& m5)
 		{
 			return temp_result::type::multiply(m1, m2, m3, m4) * m5;
 		}
@@ -1535,12 +1571,12 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, F>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3,
-			const matrix<D, E>& m4,
-			const matrix<E, F>& m5)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3,
+				const matrix<D, E>& m4,
+				const matrix<E, F>& m5)
 		{
 			return final_result::type::multiply(
 				temp_result::type::multiply(m1, m2, m3),
@@ -1569,12 +1605,12 @@ namespace algebra
 			"Final result computation error");
 
 		static matrix<A, F>
-		multiply(
-			const matrix<A, B>& m1,
-			const matrix<B, C>& m2,
-			const matrix<C, D>& m3,
-			const matrix<D, E>& m4,
-			const matrix<E, F>& m5)
+			multiply(
+				const matrix<A, B>& m1,
+				const matrix<B, C>& m2,
+				const matrix<C, D>& m3,
+				const matrix<D, E>& m4,
+				const matrix<E, F>& m5)
 		{
 			return final_result::type::multiply(m1, m2, temp_result::type::multiply(m3, m4, m5));
 		}
@@ -1618,11 +1654,11 @@ namespace algebra
 			static const size_t cost = _1_x_args::cost + typename _matrix_mul_best_cost<M2, M3, _Args...>::cost;
 
 			static typename _1_x_args::result_type
-			multiply(
-				const M1& m1,
-				const M2& m2,
-				const M3& m3,
-				const _Args&... args)
+				multiply(
+					const M1& m1,
+					const M2& m2,
+					const M3& m3,
+					const _Args&... args)
 			{
 				return m1 * _matrix_mul_best_cost<M2, M3, _Args...>::type::multiply(m2, m3, args ...);
 			}
@@ -1639,11 +1675,11 @@ namespace algebra
 			static const size_t cost = _2_x_args::cost + typename _matrix_mul_best_cost<M3, _Args...>::cost;
 
 			static typename _2_x_args::result_type
-			multiply(
-				const M1& m1,
-				const M2& m2,
-				const M3& m3,
-				const _Args&... args)
+				multiply(
+					const M1& m1,
+					const M2& m2,
+					const M3& m3,
+					const _Args&... args)
 			{
 				return _2_x_args::type::multiply(
 					m1, m2,
@@ -1663,11 +1699,11 @@ namespace algebra
 			static const size_t cost = _3_x_args::cost + typename _matrix_mul_best_cost<_Args...>::cost;
 
 			static typename _3_x_args::result_type
-			multiply(
-				const M1& m1,
-				const M2& m2,
-				const M3& m3,
-				const _Args&... args)
+				multiply(
+					const M1& m1,
+					const M2& m2,
+					const M3& m3,
+					const _Args&... args)
 			{
 				return _3_x_args::type::multiply(
 					m1, m2, m3,
@@ -1743,9 +1779,9 @@ namespace algebra
 	matrix<
 		typename M1::row_dimension,
 		typename M2::column_dimension>
-	multiply(
-		const M1& m1,
-		const M2& m2)
+		multiply(
+			const M1& m1,
+			const M2& m2)
 	{
 		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
 
@@ -1756,10 +1792,10 @@ namespace algebra
 	matrix<
 		typename M1::row_dimension,
 		typename M3::column_dimension>
-	multiply(
-		const M1& m1,
-		const M2& m2,
-		const M3& m3)
+		multiply(
+			const M1& m1,
+			const M2& m2,
+			const M3& m3)
 	{
 		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
 		static_assert(M2::column_dimension::rank == M3::row_dimension::rank, "Row rank of M2 does not match column rank of M3.");
@@ -1776,11 +1812,11 @@ namespace algebra
 	matrix<
 		typename M1::row_dimension,
 		typename last<_Args...>::type::column_dimension>
-	multiply(
-		const M1& m1,
-		const M2& m2,
-		const M3& m3,
-		const _Args&... args)
+		multiply(
+			const M1& m1,
+			const M2& m2,
+			const M3& m3,
+			const _Args&... args)
 	{
 		static_assert(M1::column_dimension::rank == M2::row_dimension::rank, "Row rank of M1 does not match column rank of M2.");
 		static_assert(M2::column_dimension::rank == M3::row_dimension::rank, "Row rank of M2 does not match column rank of M3.");
