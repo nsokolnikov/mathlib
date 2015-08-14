@@ -5,7 +5,9 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-std::vector<std::pair<int, algebra::matrix<D28, D28>>> load_mnist() {
+
+//Uses getline. Really slow.
+std::vector<std::pair<int, algebra::matrix<D28, D28>>> old_load_mnist() {
 	std::vector<std::pair<int, algebra::matrix<D28, D28>>> result;
 	
 	std::ifstream infile;
@@ -20,15 +22,17 @@ std::vector<std::pair<int, algebra::matrix<D28, D28>>> load_mnist() {
 	std::stringstream test;
 
 	while (std::getline(infile, line)) {
-		std::stringstream strstr(line);
+		std::stringstream linestream(line);
 		std::string word = "";
 
 		//change to use ubyte later
 		std::vector<double> data;
-		std::getline(strstr, word, ',');
+
+		//first element is tag
+		std::getline(linestream, word, ',');
 		int tag = atoi(word.c_str());
 
-		while (std::getline(strstr, word, ',')) {
+		while (std::getline(linestream, word, ',')) {
 			data.push_back(atof(word.c_str()));
 		}
 
@@ -43,6 +47,45 @@ std::vector<std::pair<int, algebra::matrix<D28, D28>>> load_mnist() {
 		
 		auto result_pair = std::make_pair(tag, algebra::matrix<D28, D28>(data));
 		result.push_back(result_pair);
+	}
+	return result;
+
+}
+
+//Uses C read and pointer arithmetic. Fast.
+std::vector<std::pair<int, algebra::matrix<D28, D28>>> load_mnist() {
+	std::vector<std::pair<int, algebra::matrix<D28, D28>>> result;
+	std::ifstream::pos_type size;
+	unsigned char * memblock;
+
+	for (int filecount = 0; filecount < 10; filecount++) {
+		std::stringstream test;
+		test << "data" << filecount << ".data";
+		std::ifstream infile = std::ifstream(test.str(), std::ios::in | std::ios::binary | std::ios::ate);
+		test.str("");
+		if (infile.is_open()) {
+			unsigned char* memblock;
+			double* double_arr;
+			size = infile.tellg();
+
+			memblock = new unsigned char[size];
+			infile.seekg(0, std::ios::beg);
+			infile.read((char*)memblock, size);
+			infile.close();
+
+			double_arr = new double[size];
+			for (int l = 0; l < size; l++) {
+				double_arr[l] = (double)memblock[l];
+			}
+			for (int i = 0; i < 1000; i++) {
+				std::vector<double> data(double_arr + (784 * i), double_arr + (784 * (i + 1)));
+				auto result_pair = std::make_pair(filecount, algebra::matrix<D28, D28>(data));
+				result.push_back(result_pair);
+			}
+		}
+		else {
+			test::log("The file couldn't be read");
+		}
 	}
 	return result;
 
