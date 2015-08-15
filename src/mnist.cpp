@@ -56,7 +56,7 @@ std::vector<std::pair<int, algebra::matrix<D28, D28>>> old_load_mnist() {
 std::vector<std::pair<int, algebra::matrix<D28, D28>>> load_mnist() {
 	std::vector<std::pair<int, algebra::matrix<D28, D28>>> result;
 	std::ifstream::pos_type size;
-	unsigned char * memblock;
+//	unsigned char * memblock;
 
 	for (int filecount = 0; filecount < 10; filecount++) {
 		std::stringstream test;

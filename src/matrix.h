@@ -1159,6 +1159,124 @@ namespace algebra
 		std::vector<value_type> m_values;
 	};
 
+
+
+	template <class M, class N>
+	class sparse_matrix : public algebra::matrix<M, N>
+	{
+	public:
+		typedef typename M row_dimension;
+		typedef typename N column_dimension;
+		typedef typename matrix<M, N> _Base;
+		typedef sparse_matrix<row_dimension, column_dimension> _Self;
+		static const size_t row_rank = row_dimension::rank;
+		static const size_t column_rank = column_dimension::rank;
+
+		static_assert(std::is_base_of<dimension<row_rank>, M>::value, "Type parameter M must be a dimension.");
+		static_assert(std::is_base_of<dimension<column_rank>, N>::value, "Type parameter N must be a dimension.");
+
+		static_assert(_Self::column_rank <= 10000 && _Self::row_rank <= 10000, "Matrix dimensions cannot exceed 10000.");
+
+		typedef double value_type;
+		//Syntax errors on these lines, fix later
+		//typedef typename const_row_iterator<const _Self> const_row_iterator;
+		//typedef typename row_iterator<_Self> row_iterator;
+		//typedef typename const_column_iterator<const _Self> const_column_iterator;
+		//typedef typename column_iterator<_Self> column_iterator;
+
+
+		sparse_matrix()
+			: m_values()
+		{
+		}
+
+		sparse_matrix(std::vector<value_type> data)
+			: m_values()
+		{
+			if (data.size() != _Self::column_rank * _Self::row_rank)
+				throw std::invalid_argument("Vector size does not match matrix rank.");
+
+			m_values.resize(_Self::column_rank * _Self::row_rank, nullptr);
+
+			for (size_t i = 0; i < _Self::row_rank; i++) {
+				for (size_t j = 0; j < _Self::column_rank) {
+					if (!_Self.is_zero())
+						if (m_values[i] == nullptr) {
+							m_values[i] = vector<pair<size_t, value_type>>();
+						}
+						m_values[i]->push_back(std::pair<j, data[i*Self::column_rank + j]>());
+				}
+			}
+		}
+
+		sparse_matrix(const sparse_matrix& other)
+			: m_values(other.m_values)
+		{
+		}
+		sparse_matrix(sparse_matrix&& other)
+			: m_values(std::move(other.m_values))
+		{}
+
+		sparse_matrix(std::initializer_list<value_type> data)
+			: m_values()
+		{
+			if (data.size() != _Self::column_rank * _Self::row_rank)
+				throw std::invalid_argument("Initializer size does not match matrix rank.");
+
+			for (size_t i = 0; i < _Self::row_rank; i++) {
+				for (size_t j = 0; j < _Self::column_rank) {
+					if (!_Self.is_zero())
+						m_values[i].push_back(std::pair<j, data[i*Self::column_rank + j]>());
+				}
+			}
+		}
+		value_type& operator() (
+			const size_t row,
+			const size_t column)
+		{
+			if (column >= _Self::column_rank)
+				throw std::invalid_argument("Column index out of range.");
+			if (row >= _Self::row_rank)
+				throw std::invalid_argument("Row index out of range.");
+			auto vec = m_values[row];
+			
+			return m_values[row * _Self::column_rank + column];
+		}
+
+		const value_type& operator() (
+			const size_t row,
+			const size_t column) const
+		{
+			if (column >= _Self::column_rank)
+				throw std::invalid_argument("Column index out of range.");
+			if (row >= _Self::row_rank)
+				throw std::invalid_argument("Row index out of range.");
+
+			if (m_values.size() == 0)
+			{
+				static const value_type zero = 0.0;
+				return zero;
+			}
+
+			return m_values[row * _Self::column_rank + column];
+		}
+
+
+	private:
+		//This isn't allowed for some reason, so it's going to be a method instead.
+		//static constexpr double epsilon = 0.00000000000001;
+		//To prevent floating point errors, anything less than this is considered zero. 
+		double epsilon() {
+			return 0.00000000000001;
+		}
+		bool is_zero(value_type t) {
+			return ((t < epsilon() && t > -epsilon()) || t == 0);
+		}
+		std::vector<std::unique_ptr<std::vector<std::pair<size_t, value_type>>>> m_values;
+	};
+
+
+
 	template <class M, class N, class P>
 	matrix<M, P> operator* (const matrix<M, N>& m1, const matrix<N, P>& m2)
 	{
