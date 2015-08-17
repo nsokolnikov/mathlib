@@ -86,10 +86,13 @@ void test_matrices() {
 }
 
 void test_sparse_matrices() {
-	algebra::sparse_matrix<D3, D3> m3(std::vector<double>{
+	scenario sc("Sparse Matrices Test");
+
+
+	algebra::sparse_matrix<D3, D3> m3{
 		10, 20, 30,
 		40, 50, 60,
-		70, 80, 90 });
+		70, 80, 90 };
 
 	algebra::sparse_matrix<D3, D3> m4(std::vector<double>{
 		10, 20, 30,
@@ -126,8 +129,10 @@ void test_sparse_matrices() {
 		1, 1, 1, 0,
 
 	});
+	test::assert(m3 == m3, "Test failed: equality of the same matrix");
+	test::assert(m3(0, 0) == 10, "Test Failed: matrix random access");
 
 
-
+	sc.pass();
 
 }

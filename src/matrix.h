@@ -1187,8 +1187,11 @@ namespace algebra
 
 
 		sparse_matrix()
-			: m_values()
+			: m_values(_Self::row_rank)
 		{
+			for (size_t i = 0; i < _Self::row_rank; ++i) {
+				m_values[i] = std::unique_ptr<sparse_pair>(new sparse_pair());
+			}
 		}
 
 		sparse_matrix(std::vector<value_type> data)
@@ -1222,13 +1225,30 @@ namespace algebra
 			: m_values(std::move(other.m_values))
 		{}
 		
-		sparse_matrix(std::initializer_list<value_type> data)
-			: m_values()
+		sparse_matrix(std::initializer_list<value_type> data_list)
+			: m_values(_Self::row_rank)
 		{
-			auto data = vector<value_type> data;
-			return sparse_matrix(data);
+			auto data = std::vector<value_type>(data_list);
+			if (data.size() != _Self::column_rank * _Self::row_rank)
+				throw std::invalid_argument("Initializer size does not match matrix rank.");
+
+			//If there's a way to put nullptr in here instead of initializing them, it would save memory.
+			for (size_t i = 0; i < _Self::row_rank; ++i) {
+				m_values[i] = std::unique_ptr<sparse_pair>(new sparse_pair());
+			}
+
+
+			for (size_t i = 0; i < _Self::row_rank; ++i) {
+				for (size_t j = 0; j < _Self::column_rank; ++j) {
+					if (!is_zero(data[i*_Self::column_rank + j]))
+						m_values[i]->first.push_back(j);
+					m_values[i]->second.push_back(data[i*_Self::column_rank + j]);
+				}
+			}
 		}
 		
+		/*
+		//big issue: how to return a mutable value for an element that is zero and not stored.
 		value_type& operator() (
 			const size_t row,
 			const size_t column)
@@ -1238,8 +1258,10 @@ namespace algebra
 			if (row >= _Self::row_rank)
 				throw std::invalid_argument("Row index out of range.");
 
-			if (m_values[row] = nullptr) {
-				return zero();
+			if (m_values[row]->first.empty()) {
+				static value_type z = zero();
+
+				return z;
 			}
 			else {
 				auto elem = m_values[row]->first;
@@ -1252,6 +1274,7 @@ namespace algebra
 				}
 			}
 		}
+		*/
 
 		const value_type& operator() (
 			const size_t row,
@@ -1262,13 +1285,21 @@ namespace algebra
 			if (row >= _Self::row_rank)
 				throw std::invalid_argument("Row index out of range.");
 
-			if (m_values.size() == 0)
-			{
-				static const value_type zero = zero();
-				return zero;
-			}
+			static const value_type z = 0.0;
 
-			return m_values[row * _Self::column_rank + column];
+			if (m_values[row]->first.empty()) {
+
+				return z;
+			}
+			else {
+				auto index_iter = std::find(m_values[row]->first.begin(), m_values[row]->first.end(), column);
+				if (index_iter != m_values[row]->first.end()) {
+					return m_values[row]->second[index_iter - m_values[row]->first.begin()];
+				}
+				else {
+					return z;
+				}
+			}
 		}
 
 
@@ -1280,7 +1311,7 @@ namespace algebra
 			return 0.00000000000001;
 		}
 		//for encapsulation
-		double zero() {
+		value_type zero() {
 			return 0.0;
 		}
 		bool is_zero(value_type t) {
