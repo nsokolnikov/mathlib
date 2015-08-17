@@ -84,3 +84,50 @@ void test_matrices() {
 
 	sc.pass();
 }
+
+void test_sparse_matrices() {
+	algebra::sparse_matrix<D3, D3> m3(std::vector<double>{
+		10, 20, 30,
+		40, 50, 60,
+		70, 80, 90 });
+
+	algebra::sparse_matrix<D3, D3> m4(std::vector<double>{
+		10, 20, 30,
+		40, 50, 60,
+		70, 80, 90 });
+
+	algebra::sparse_matrix<D3, D3> m5(std::vector<double>{
+		10, 40, 70,
+		20, 50, 80,
+		30, 60, 90
+	});
+
+	algebra::sparse_matrix<D3, D3> m6(std::vector<double>{
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0
+	});
+
+	algebra::sparse_matrix<D3, D3> m7(std::vector<double>{
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1
+	});
+
+	algebra::sparse_matrix<D3, D3> m8(std::vector<double>{
+		1, 1, 1,
+		1, 1, 1,
+		1, 1, 1
+	});
+
+	algebra::sparse_matrix<D3, D4> m9(std::vector<double>{
+		1, 1, 1, 0,
+		1, 1, 1, 0,
+		1, 1, 1, 0,
+
+	});
+
+
+
+
+}

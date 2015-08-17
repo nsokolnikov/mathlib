@@ -1169,6 +1169,7 @@ namespace algebra
 		typedef typename N column_dimension;
 		typedef typename matrix<M, N> _Base;
 		typedef sparse_matrix<row_dimension, column_dimension> _Self;
+		typedef typename std::pair<std::vector<size_t>, std::vector<value_type>> sparse_pair;
 		static const size_t row_rank = row_dimension::rank;
 		static const size_t column_rank = column_dimension::rank;
 
@@ -1191,22 +1192,26 @@ namespace algebra
 		}
 
 		sparse_matrix(std::vector<value_type> data)
-			: m_values()
+			: m_values(_Self::row_rank)
 		{
 			if (data.size() != _Self::column_rank * _Self::row_rank)
-				throw std::invalid_argument("Vector size does not match matrix rank.");
+				throw std::invalid_argument("Initializer size does not match matrix rank.");
 
-			m_values.resize(_Self::column_rank * _Self::row_rank, nullptr);
+			//If there's a way to put nullptr in here instead of initializing them, it would save memory.
+			for (size_t i = 0; i < _Self::row_rank; ++i) {
+				m_values[i] = std::unique_ptr<sparse_pair>(new sparse_pair());
+			}
 
-			for (size_t i = 0; i < _Self::row_rank; i++) {
-				for (size_t j = 0; j < _Self::column_rank) {
-					if (!_Self.is_zero())
-						if (m_values[i] == nullptr) {
-							m_values[i] = vector<pair<size_t, value_type>>();
-						}
-						m_values[i]->push_back(std::pair<j, data[i*Self::column_rank + j]>());
+
+			for (size_t i = 0; i < _Self::row_rank; ++i) {
+				for (size_t j = 0; j < _Self::column_rank; ++j) {
+					if (!is_zero(data[i*_Self::column_rank + j]))
+						m_values[i]->first.push_back(j);
+						m_values[i]->second.push_back(data[i*_Self::column_rank + j]);
 				}
 			}
+
+	
 		}
 
 		sparse_matrix(const sparse_matrix& other)
@@ -1216,20 +1221,14 @@ namespace algebra
 		sparse_matrix(sparse_matrix&& other)
 			: m_values(std::move(other.m_values))
 		{}
-
+		
 		sparse_matrix(std::initializer_list<value_type> data)
 			: m_values()
 		{
-			if (data.size() != _Self::column_rank * _Self::row_rank)
-				throw std::invalid_argument("Initializer size does not match matrix rank.");
-
-			for (size_t i = 0; i < _Self::row_rank; i++) {
-				for (size_t j = 0; j < _Self::column_rank) {
-					if (!_Self.is_zero())
-						m_values[i].push_back(std::pair<j, data[i*Self::column_rank + j]>());
-				}
-			}
+			auto data = vector<value_type> data;
+			return sparse_matrix(data);
 		}
+		
 		value_type& operator() (
 			const size_t row,
 			const size_t column)
@@ -1238,9 +1237,20 @@ namespace algebra
 				throw std::invalid_argument("Column index out of range.");
 			if (row >= _Self::row_rank)
 				throw std::invalid_argument("Row index out of range.");
-			auto vec = m_values[row];
-			
-			return m_values[row * _Self::column_rank + column];
+
+			if (m_values[row] = nullptr) {
+				return zero();
+			}
+			else {
+				auto elem = m_values[row]->first;
+				auto index_iter = std::find(elem.begin(), elem.end(), column);
+				if (index_iter != elem.end()) {
+					return m_values[row]->second[index_iter - elem.begin()];
+				}
+				else {
+					return zero();
+				}
+			}
 		}
 
 		const value_type& operator() (
@@ -1254,7 +1264,7 @@ namespace algebra
 
 			if (m_values.size() == 0)
 			{
-				static const value_type zero = 0.0;
+				static const value_type zero = zero();
 				return zero;
 			}
 
@@ -1269,10 +1279,18 @@ namespace algebra
 		double epsilon() {
 			return 0.00000000000001;
 		}
+		//for encapsulation
+		double zero() {
+			return 0.0;
+		}
 		bool is_zero(value_type t) {
 			return ((t < epsilon() && t > -epsilon()) || t == 0);
 		}
-		std::vector<std::unique_ptr<std::vector<std::pair<size_t, value_type>>>> m_values;
+		/*
+		Pair of vectors instead of vector of pairs allows the use of std::find to 
+		find the index of the datum. It's also faster. 
+		*/
+		std::vector<std::unique_ptr<sparse_pair>> m_values;
 	};
 
 

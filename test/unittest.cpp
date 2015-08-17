@@ -14,7 +14,7 @@ void run_tests()
 		test_vector_expressions();
 		test_vector();
 		test_matrices();
-
+		test_sparse_matrices();
 		test_view();
 
 		test_matrix_row_iterators();
