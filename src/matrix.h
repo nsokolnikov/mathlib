@@ -1170,6 +1170,8 @@ namespace algebra
 		typedef typename matrix<M, N> _Base;
 		typedef sparse_matrix<row_dimension, column_dimension> _Self;
 		typedef typename std::pair<std::vector<size_t>, std::vector<value_type>> sparse_pair;
+		typedef typename number_traits<typename matrix<M, N>::value_type> value_type_traits;
+
 		static const size_t row_rank = row_dimension::rank;
 		static const size_t column_rank = column_dimension::rank;
 
@@ -1208,7 +1210,7 @@ namespace algebra
 
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				for (size_t j = 0; j < _Self::column_rank; ++j) {
-					if (!is_zero(data[i*_Self::column_rank + j]))
+					if (!value_type_traits::is_zero(data[i*_Self::column_rank + j]))
 						m_values[i]->first.push_back(j);
 						m_values[i]->second.push_back(data[i*_Self::column_rank + j]);
 				}
@@ -1240,7 +1242,7 @@ namespace algebra
 
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				for (size_t j = 0; j < _Self::column_rank; ++j) {
-					if (!is_zero(data[i*_Self::column_rank + j]))
+					if (!value_type_traits::is_zero(data[i*_Self::column_rank + j]))
 						m_values[i]->first.push_back(j);
 					m_values[i]->second.push_back(data[i*_Self::column_rank + j]);
 				}
@@ -1285,7 +1287,7 @@ namespace algebra
 			if (row >= _Self::row_rank)
 				throw std::invalid_argument("Row index out of range.");
 
-			static const value_type z = 0.0;
+			static const value_type z = value_type_traits::zero();
 
 			if (m_values[row]->first.empty()) {
 
@@ -1304,19 +1306,7 @@ namespace algebra
 
 
 	private:
-		//This isn't allowed for some reason, so it's going to be a method instead.
-		//static constexpr double epsilon = 0.00000000000001;
-		//To prevent floating point errors, anything less than this is considered zero. 
-		double epsilon() {
-			return 0.00000000000001;
-		}
-		//for encapsulation
-		value_type zero() {
-			return 0.0;
-		}
-		bool is_zero(value_type t) {
-			return ((t < epsilon() && t > -epsilon()) || t == 0);
-		}
+
 		/*
 		Pair of vectors instead of vector of pairs allows the use of std::find to 
 		find the index of the datum. It's also faster. 

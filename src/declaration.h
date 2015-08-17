@@ -74,5 +74,10 @@ namespace algebra
 		{
 			return 0.0;
 		}
+
+		static bool is_zero(const double& d) {
+			const double error = 1.0e-10;
+			return std::abs(d) < error;
+		}
 	};
 }
