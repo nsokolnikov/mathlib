@@ -657,6 +657,8 @@ namespace algebra
 			return it;
 		}
 
+
+
 	protected:
 		_Matrix* m_pMatrix;
 		const size_t m_Row;
@@ -1303,7 +1305,6 @@ namespace algebra
 				}
 			}
 		}
-
 
 	private:
 

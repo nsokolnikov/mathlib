@@ -29,10 +29,12 @@ void test_matrices() {
 		40, 50, 60,
 		70, 80, 90 };
 
-	algebra::matrix<D3, D3> m4{
+	algebra::matrix<D3, D3> m3_2(m3);
+
+	algebra::matrix<D3, D3> m4(std::vector<double>{
 		10, 20, 30,
 		40, 50, 60,
-		70, 80, 90 };
+		70, 80, 90 });
 
 	algebra::matrix<D3, D3> m5{
 		10, 40, 70,
@@ -66,6 +68,7 @@ void test_matrices() {
 	};
 	
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
+	test::assert(m3 == m3_2, "Test failed: copy constructor");
 
 	test::assert(m3(0, 0) == 10, "Test Failed: matrix random access");
 	test::assert(m3 == m4, "Test failed: equality by value");
@@ -131,7 +134,9 @@ void test_sparse_matrices() {
 	});
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
 	test::assert(m3(0, 0) == 10, "Test Failed: matrix random access");
-
+	test::assert(m7(1, 0) == 0, "Test Failed: random access a zero element");
+	test::assert(m3 == m4, "Test failed: equality by value");
+	test::assert(m3 == m5.transpose(), "Test failed: Transpose");
 
 	sc.pass();
 
