@@ -1175,7 +1175,8 @@ namespace algebra
 		static _Self pow(const _Self& m, const value_type C)
 		{
 			_Self result;
-
+			if (column_rank != row_rank)
+				throw std::logic_error("Cannot raise a non-square matrix to a power.");
 			if (false == m.empty())
 			{
 				result = m;
@@ -1222,6 +1223,13 @@ namespace algebra
 			return result;
 		}
 
+		value_type accu() {
+			value_type result = number_traits<value_type>::zero();
+			for (value_type v : m_values) {
+				result = result + v;
+			}
+			return result;
+		}
 
 		static _Self random(
 			const value_type min = 0.0,
@@ -1242,38 +1250,26 @@ namespace algebra
 			return result;
 		}
 
-		std::string to_string() {
-			std::stringstream os;
+	private:
+		friend std::ostream& operator<<(std::ostream& os, const _Self& mat) {
 			std::string newline = "";
 			std::string space = "";
 			os << "[";
 			for (size_t i = 0; i < row_rank; i++) {
 				os << newline;
 				for (size_t j = 0; j < column_rank; j++) {
-					os << space << (*this)(i, j);
+					os << space << mat(i, j);
 					space = " ";
 				}
 				newline = "\n";
 			}
 			os << "]";
-			return os.str();
-
+			return os;
 		}
-		
-		friend std::ostream& operator<<(std::ostream& os, algebra::matrix<M, N>& mat);
-
-
-	private:
 		std::vector<value_type> m_values;
 	};
 
-	//doesn't compile. "unresolved external symbol" error.
-//	template <class M, class N>
-//	std::ostream& operator<<(std::ostream& os, const algebra::matrix<M, N>& mat)
-//	{
-//		os << mat.to_string();
-//		return os;
-//	}
+
 
 	template <class M, class N, class P>
 	matrix<M, P> operator* (const matrix<M, N>& m1, const matrix<N, P>& m2)
