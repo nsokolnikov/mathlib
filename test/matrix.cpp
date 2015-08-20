@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <unittest.h>
 #include <matrix.h>
-
+#include <sstream>
 void test_matrices() {
 
 	scenario sc("Matrices Test");
@@ -99,6 +99,11 @@ void test_matrices() {
 		0,1,0,0,
 		0,0,1,0
 	};
+
+	std::stringstream test;
+//	test << m3;
+	test << m3.to_string();
+	test::log(test.str().c_str());
 	
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
 
