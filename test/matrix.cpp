@@ -100,6 +100,12 @@ void test_matrices() {
 		0,0,1,0
 	};
 
+	algebra::matrix<D3, D3> m_twos{
+		2,2,2,
+		2,2,2,
+		2,2,2
+	};
+
 	std::stringstream test;
 	test << m3;
 	test::log(test.str().c_str());
@@ -133,6 +139,8 @@ void test_matrices() {
 	test::assert(m3.max() == 90, "Test failed: max()");
 	test::assert(m3.min() == 10, "Test failed: min()");
 	test::assert(m3.accu() == 450, "Test failed: accu()");
+	test::assert(algebra::matrix<D3, D3>::ones() == m8, "Test failed: ones");
+	test::assert(algebra::matrix<D3, D3>::ones(2) == m_twos, "Test failed: ones with args");
 
 	auto m10 = m8.resize<D3, D4>();
 

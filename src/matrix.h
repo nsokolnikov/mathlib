@@ -1134,7 +1134,7 @@ namespace algebra
 			return result;
 		}
 
-		_Self elem_pow(const typename value_type C)
+		_Self elem_pow(const typename value_type C) const
 		{
 			_Self result;
 			auto m = *this;
@@ -1155,7 +1155,7 @@ namespace algebra
 			return result;
 		}
 
-		_Self abs()
+		_Self abs() const
 		{
 			_Self result;
 			auto m = *this;
@@ -1172,7 +1172,7 @@ namespace algebra
 			return result;
 		}
 
-		static _Self pow(const _Self& m, const value_type C)
+		static _Self pow(const _Self& m, const value_type C) 
 		{
 			_Self result;
 			if (column_rank != row_rank)
@@ -1192,8 +1192,6 @@ namespace algebra
 
 		static _Self eye() {
 			value_type arr[row_rank*column_rank];
-			auto r = row_rank;
-			auto c = column_rank;
 			for (size_t i = 0; i < row_rank*column_rank; ++i) {
 				if (i % column_rank == i / column_rank) {
 					arr[i] = 1;
@@ -1204,10 +1202,15 @@ namespace algebra
 			}
 			_Self result(std::vector<value_type>(arr, arr + sizeof arr / sizeof arr[0]));
 			return result;
-
 		}
 
-		value_type min() {
+		static _Self ones(value_type i = (number_traits<value_type>::zero()+1)) {
+			auto result = std::vector<value_type>(row_rank*column_rank);
+			std::fill(result.begin(), result.end(), i);
+			return _Self(result);
+		}
+
+		value_type min() const {
 			value_type result = m_values[0];
 			for (value_type t : m_values) {
 				if (t < result) result = t;
@@ -1215,7 +1218,7 @@ namespace algebra
 			return result;
 		}
 
-		value_type max() {
+		value_type max() const {
 			value_type result = m_values[0];
 			for (value_type t : m_values) {
 				if (t > result) result = t;
@@ -1223,14 +1226,14 @@ namespace algebra
 			return result;
 		}
 
-		value_type accu() {
+		value_type accu() const {
 			value_type result = number_traits<value_type>::zero();
 			for (value_type v : m_values) {
 				result = result + v;
 			}
 			return result;
 		}
-
+		
 		static _Self random(
 			const value_type min = 0.0,
 			const value_type max = 1.0)
