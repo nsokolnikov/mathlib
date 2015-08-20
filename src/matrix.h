@@ -799,6 +799,13 @@ namespace algebra
 			m_values.assign(data.begin(), data.end());
 		}
 
+		matrix(std::vector<value_type> data) {
+			if (data.size() != _Self::column_rank * _Self::row_rank)
+				throw std::invalid_argument("Initializer size does not match matrix rank.");
+
+			m_values.assign(data.begin(), data.end());
+		}
+
 		bool empty() const
 		{
 			return m_values.size() == 0;
@@ -1127,6 +1134,95 @@ namespace algebra
 			return result;
 		}
 
+		_Self elem_pow(const typename value_type C)
+		{
+			_Self result;
+			auto m = *this;
+			if (false == m.empty())
+			{
+				result = m;
+				std::transform(
+					result.m_values.begin(),
+					result.m_values.end(),
+					result.m_values.begin(),
+					[C](const value_type& d) {
+					auto result = 1.0;
+					auto c = C;
+					while (c > 0) { result *= d; c--; }
+					return result; });
+			}
+
+			return result;
+		}
+
+		_Self abs()
+		{
+			_Self result;
+			auto m = *this;
+			if (false == m.empty())
+			{
+				result = m;
+				std::transform(
+					result.m_values.begin(),
+					result.m_values.end(),
+					result.m_values.begin(),
+					[](const value_type& d) {return std::abs(d); });
+			}
+
+			return result;
+		}
+
+		static _Self pow(const _Self& m, const value_type C)
+		{
+			_Self result;
+
+			if (false == m.empty())
+			{
+				result = m;
+				auto c = C - 1;
+				while (c > number_traits<value_type>::zero()) {
+					result = result * m;
+					c--;
+				}
+			}
+
+			return result;
+		}
+
+		static _Self eye() {
+			value_type arr[row_rank*column_rank];
+			auto r = row_rank;
+			auto c = column_rank;
+			for (size_t i = 0; i < row_rank*column_rank; ++i) {
+				if (i % column_rank == i / column_rank) {
+					arr[i] = 1;
+				}
+				else {
+					arr[i] = 0;
+				}
+			}
+			_Self result(std::vector<value_type>(arr, arr + sizeof arr / sizeof arr[0]));
+			return result;
+
+		}
+
+		value_type min() {
+			value_type result = m_values[0];
+			for (value_type t : m_values) {
+				if (t < result) result = t;
+			}
+			return result;
+		}
+
+		value_type max() {
+			value_type result = m_values[0];
+			for (value_type t : m_values) {
+				if (t > result) result = t;
+			}
+			return result;
+		}
+
+
 		static _Self random(
 			const value_type min = 0.0,
 			const value_type max = 1.0)
@@ -1202,6 +1298,12 @@ namespace algebra
 	matrix<M, N> operator* (const double C, const matrix<M, N>& m)
 	{
 		return matrix<M, N>::multiply(m, C);
+	}
+
+	template <class M, class N>
+	matrix<M, N> operator^ (const matrix<M, N>& m, const double C)
+	{
+		return matrix<M, N>::pow(m, C);
 	}
 
 	template <class M, class N>
