@@ -1242,9 +1242,38 @@ namespace algebra
 			return result;
 		}
 
+		std::string to_string() {
+			std::stringstream os;
+			std::string newline = "";
+			std::string space = "";
+			os << "[";
+			for (size_t i = 0; i < row_rank; i++) {
+				os << newline;
+				for (size_t j = 0; j < column_rank; j++) {
+					os << space << (*this)(i, j);
+					space = " ";
+				}
+				newline = "\n";
+			}
+			os << "]";
+			return os.str();
+
+		}
+		
+		friend std::ostream& operator<<(std::ostream& os, algebra::matrix<M, N>& mat);
+
+
 	private:
 		std::vector<value_type> m_values;
 	};
+
+	//doesn't compile. "unresolved external symbol" error.
+//	template <class M, class N>
+//	std::ostream& operator<<(std::ostream& os, const algebra::matrix<M, N>& mat)
+//	{
+//		os << mat.to_string();
+//		return os;
+//	}
 
 	template <class M, class N, class P>
 	matrix<M, P> operator* (const matrix<M, N>& m1, const matrix<N, P>& m2)
