@@ -1251,35 +1251,45 @@ namespace algebra
 			}
 		}
 		
-		/*
-		//big issue: how to return a mutable value for an element that is zero and not stored.
-		value_type& operator() (
-			const size_t row,
-			const size_t column)
+		_Self& operator=(const _Self& other)
 		{
-			if (column >= _Self::column_rank)
-				throw std::invalid_argument("Column index out of range.");
-			if (row >= _Self::row_rank)
-				throw std::invalid_argument("Row index out of range.");
-
-			if (m_values[row]->first.empty()) {
-				static value_type z = zero();
-
-				return z;
+			if (this != std::addressof(other))
+			{
+				m_values = other.m_values;
 			}
-			else {
-				auto elem = m_values[row]->first;
-				auto index_iter = std::find(elem.begin(), elem.end(), column);
-				if (index_iter != elem.end()) {
-					return m_values[row]->second[index_iter - elem.begin()];
-				}
-				else {
-					return zero();
-				}
-			}
+
+			return (*this);
 		}
-		*/
 
+		_Self& operator=(_Self&& other)
+		{
+			if (this != std::addressof(other))
+			{
+				m_values = std::move(other.m_values);
+			}
+
+			return (*this);
+		}
+
+		//_Self operator^ (
+		//	const value_type power)
+		//{
+		//	_Self result = (*this);
+		//	for (auto& p : result.m_values) {
+		//		for (value_type s : p->second) {
+		//			//					s = s^power;
+		//			
+		//		}
+		//	}
+		//	
+		//	return result;
+		//}
+		//	
+
+
+
+		//Consult on whether this operator should even exist 
+		//for sparse_matrix. 
 		const value_type& operator() (
 			const size_t row,
 			const size_t column) const
@@ -1306,6 +1316,9 @@ namespace algebra
 			}
 		}
 
+
+
+
 	private:
 
 		/*
@@ -1313,6 +1326,8 @@ namespace algebra
 		find the index of the datum. It's also faster. 
 		*/
 		std::vector<std::unique_ptr<sparse_pair>> m_values;
+		//consider switching to CSC or Yale format: https://en.wikipedia.org/wiki/Sparse_matrix
+		
 	};
 
 
@@ -1370,6 +1385,14 @@ namespace algebra
 	{
 		return matrix<M, N>::multiply(m, C);
 	}
+
+	template <class M, class N>
+	matrix<M, N> operator^ (const matrix<M, N>& m, const double C)
+	{
+		return matrix<M, N>::pow(m, C);
+	}
+
+
 
 	template <class M, class N>
 	vector<M> operator* (
