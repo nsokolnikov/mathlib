@@ -101,8 +101,7 @@ void test_matrices() {
 	};
 
 	std::stringstream test;
-//	test << m3;
-	test << m3.to_string();
+	test << m3;
 	test::log(test.str().c_str());
 	
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
@@ -133,6 +132,7 @@ void test_matrices() {
 	test::assert(algebra::matrix<D3, D3>::eye() == m7, "Test failed: eye()");
 	test::assert(m3.max() == 90, "Test failed: max()");
 	test::assert(m3.min() == 10, "Test failed: min()");
+	test::assert(m3.accu() == 450, "Test failed: accu()");
 
 	auto m10 = m8.resize<D3, D4>();
 
