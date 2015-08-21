@@ -18,8 +18,9 @@ void run_tests()
 		test_view();
 
 		test_matrix_row_iterators();
+		test_matrix_column_iterators();
 		test_matrix_view_row_iterators();
-
+		test_matrix_view_column_iterators();
 		test_solve();
 
 		test::log("===========================================");
