@@ -137,7 +137,15 @@ void test_sparse_matrices() {
 	test::assert(m7(1, 0) == 0, "Test Failed: random access a zero element");
 	test::assert(m3 == m4, "Test failed: equality by value");
 	test::assert(m3 == m5.transpose(), "Test failed: Transpose");
-
+	m3.to_yale();
+	m3.print_yale();
+	for (size_t i = 1; i < 3; i++) {
+		for (size_t j = 0; j < 3; j++) {
+			double yale = m3.yale_get(i, j);
+			double regular = m3(i, j);
+			test::assert(m3.yale_get(i, j) == m3(i, j), "Test failed: yale random access");
+		}
+	}
 	sc.pass();
 
 }

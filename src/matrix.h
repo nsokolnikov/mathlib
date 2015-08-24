@@ -7,6 +7,9 @@
 #include "declaration.h"
 #include "expression.h"
 #include "vector.h"
+//remove sstream include as soon as print_yale() is gone
+#include <fstream>
+#include <sstream>
 
 namespace algebra
 {
@@ -1316,10 +1319,82 @@ namespace algebra
 			}
 		}
 
+		bool is_yale() {
+			return yale;
+		}
+
+		void print_yale() {
+			if (!yale) return;
+			std::stringstream log;
+			for(auto i : values)
+				log << i << " ";
+			log << "\n";
+			for(auto i : cols)
+				log << i << " ";
+			log << "\n";
+			for(auto i : ia)
+				log << i << " ";
+			log << "\n";
+
+
+			test::log(log.str().c_str());
+		}
+
+		void to_yale() {
+			if (yale) return;
+
+			size_t index = 0;
+			for (size_t i = 0; i < m_values.size(); ++i) {
+				ia[i] = index; 
+				auto& elem = m_values[i];
+				for (size_t j = 0; j < elem->first.size(); ++j) {
+					values.push_back(elem->second[j]);
+					cols.push_back(elem->first[j]);
+					++index;
+				}
+			}
+			ia[row_rank] = values.size();
+			
+
+
+			yale = true;
+
+		}
+
+		value_type yale_get(size_t row, size_t column) {
+			if (column >= _Self::column_rank)
+				throw std::invalid_argument("Column index out of range.");
+			if (row >= _Self::row_rank)
+				throw std::invalid_argument("Row index out of range.");
+
+
+			size_t index = ia[row];
+			size_t next_index = ia[row+1];
+			if (index == next_index) return value_type_traits::zero();
+			for (size_t i = index; i < next_index; ++i) {
+				//TODO: refactor later to do a binary search instead of linear
+				if (cols[i] == column) return values[i];
+				if (cols[i] > column) return value_type_traits::zero();
+			}
+
+			return value_type_traits::zero();//just in case
+
+		}
+
 
 
 
 	private:
+		//TODO: find some way of using arrays instead of std::vector(for speed)
+		bool yale = false;
+		//holds the values
+		std::vector<value_type> values;
+		//holds the column indices
+		std::vector<size_t> cols;
+		//holds the index of the first value in every row
+		//sentinel value of -1 indicates an empty row
+		size_t ia[row_rank + 1];
+
 
 		/*
 		Pair of vectors instead of vector of pairs allows the use of std::find to 
@@ -1327,6 +1402,8 @@ namespace algebra
 		*/
 		std::vector<std::unique_ptr<sparse_pair>> m_values;
 		//consider switching to CSC or Yale format: https://en.wikipedia.org/wiki/Sparse_matrix
+
+		
 		
 	};
 
