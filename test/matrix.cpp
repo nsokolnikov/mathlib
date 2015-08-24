@@ -132,6 +132,13 @@ void test_sparse_matrices() {
 		1, 1, 1, 0,
 
 	});
+
+	algebra::sparse_matrix<D4, D6> m10{
+		10, 20,  0, 30, 0, 10,
+		0,  0,   0,  0,  0,  0,
+		70, 80, 90, 20, 40, 20,
+		0,  0,   0,  0,  0,  1};
+
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
 	test::assert(m3(0, 0) == 10, "Test Failed: matrix random access");
 	test::assert(m7(1, 0) == 0, "Test Failed: random access a zero element");
@@ -144,6 +151,14 @@ void test_sparse_matrices() {
 			double yale = m3.yale_get(i, j);
 			double regular = m3(i, j);
 			test::assert(m3.yale_get(i, j) == m3(i, j), "Test failed: yale random access");
+		}
+	}
+	m10.to_yale();
+	for (size_t i = 1; i < 4; i++) {
+		for (size_t j = 0; j < 6; j++) {
+			double yale = m10.yale_get(i, j);
+			double regular = m10(i, j);
+			test::assert(m10.yale_get(i, j) == m10(i, j), "Test failed: yale random access");
 		}
 	}
 	sc.pass();

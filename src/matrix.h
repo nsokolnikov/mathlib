@@ -1215,9 +1215,10 @@ namespace algebra
 
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				for (size_t j = 0; j < _Self::column_rank; ++j) {
-					if (!value_type_traits::is_zero(data[i*_Self::column_rank + j]))
+					if (!value_type_traits::is_zero(data[i*_Self::column_rank + j])) {
 						m_values[i]->first.push_back(j);
 						m_values[i]->second.push_back(data[i*_Self::column_rank + j]);
+					}
 				}
 			}
 
@@ -1247,9 +1248,10 @@ namespace algebra
 
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				for (size_t j = 0; j < _Self::column_rank; ++j) {
-					if (!value_type_traits::is_zero(data[i*_Self::column_rank + j]))
+					if (!value_type_traits::is_zero(data[i*_Self::column_rank + j])) {
 						m_values[i]->first.push_back(j);
-					m_values[i]->second.push_back(data[i*_Self::column_rank + j]);
+						m_values[i]->second.push_back(data[i*_Self::column_rank + j]);
+					}
 				}
 			}
 		}
