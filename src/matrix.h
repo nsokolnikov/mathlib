@@ -1134,13 +1134,12 @@ namespace algebra
 			return result;
 		}
 
-		_Self elem_pow(const typename value_type C) const
+		_Self element_pow(const typename value_type C) const
 		{
 			_Self result;
-			auto m = *this;
-			if (false == m.empty())
+			if (false == m_values.empty())
 			{
-				result = m;
+				result = *this;
 				std::transform(
 					result.m_values.begin(),
 					result.m_values.end(),
@@ -1158,10 +1157,9 @@ namespace algebra
 		_Self abs() const
 		{
 			_Self result;
-			auto m = *this;
-			if (false == m.empty())
+			if (false == m_values.empty())
 			{
-				result = m;
+				result = *this;
 				std::transform(
 					result.m_values.begin(),
 					result.m_values.end(),
@@ -1172,7 +1170,7 @@ namespace algebra
 			return result;
 		}
 
-		static _Self pow(const _Self& m, const value_type C) 
+		static _Self pow(const _Self& m, const size_t C) 
 		{
 			_Self result;
 			if (column_rank != row_rank)
@@ -1181,7 +1179,7 @@ namespace algebra
 			{
 				result = m;
 				auto c = C - 1;
-				while (c > number_traits<value_type>::zero()) {
+				while (c > 0) {
 					result = result * m;
 					c--;
 				}
@@ -1191,7 +1189,7 @@ namespace algebra
 		}
 
 		static _Self eye() {
-			value_type arr[row_rank*column_rank];
+			std::vector<value_type> arr(row_rank*column_rank);
 			for (size_t i = 0; i < row_rank*column_rank; ++i) {
 				if (i % column_rank == i / column_rank) {
 					arr[i] = 1;
@@ -1200,7 +1198,7 @@ namespace algebra
 					arr[i] = 0;
 				}
 			}
-			_Self result(std::vector<value_type>(arr, arr + sizeof arr / sizeof arr[0]));
+			_Self result(arr);
 			return result;
 		}
 
@@ -1211,6 +1209,7 @@ namespace algebra
 		}
 
 		value_type min() const {
+			if (m_values.empty()) return number_traits<value_type>::zero();
 			value_type result = m_values[0];
 			for (value_type t : m_values) {
 				if (t < result) result = t;
@@ -1219,6 +1218,7 @@ namespace algebra
 		}
 
 		value_type max() const {
+			if (m_values.empty()) return number_traits<value_type>::zero();
 			value_type result = m_values[0];
 			for (value_type t : m_values) {
 				if (t > result) result = t;
@@ -1226,7 +1226,7 @@ namespace algebra
 			return result;
 		}
 
-		value_type accu() const {
+		value_type accumulate() const {
 			value_type result = number_traits<value_type>::zero();
 			for (value_type v : m_values) {
 				result = result + v;
@@ -1329,7 +1329,7 @@ namespace algebra
 	}
 
 	template <class M, class N>
-	matrix<M, N> operator^ (const matrix<M, N>& m, const double C)
+	matrix<M, N> operator^ (const matrix<M, N>& m, const size_t C)
 	{
 		return matrix<M, N>::pow(m, C);
 	}

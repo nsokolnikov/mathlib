@@ -130,15 +130,15 @@ void test_matrices() {
 	test::assert(m2_mult == m5_2, "Test failed: matrix * value_type");
 	test::assert(m5 != m2_mult, "Test failed: non-destructive matrix * value_type");
 
-	test::assert(m4.elem_pow(2) == m4_elempow2, "Test failed: element-wise power");
-	test::assert((m4 ^ 2.0) == m4_pow, "Test failed: raise matrix to a power");
+	test::assert(m4.element_pow(2) == m4_elempow2, "Test failed: element-wise power");
+	test::assert((m4 ^ 2) == m4_pow, "Test failed: raise matrix to a power");
 
 	test::assert(m4_abs.abs() == m4, "Test failed: absolute value");
 	test::assert(algebra::matrix<D3, D4>::eye() == eye, "Test failed: eye()");
 	test::assert(algebra::matrix<D3, D3>::eye() == m7, "Test failed: eye()");
 	test::assert(m3.max() == 90, "Test failed: max()");
 	test::assert(m3.min() == 10, "Test failed: min()");
-	test::assert(m3.accu() == 450, "Test failed: accu()");
+	test::assert(m3.accumulate() == 450, "Test failed: accu()");
 	test::assert(algebra::matrix<D3, D3>::ones() == m8, "Test failed: ones");
 	test::assert(algebra::matrix<D3, D3>::ones(2) == m_twos, "Test failed: ones with args");
 
