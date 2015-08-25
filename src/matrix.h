@@ -1384,6 +1384,14 @@ namespace algebra
 		}
 
 
+		_Self sum(
+			const sparse_matrix<M, N>& m1,
+			const sparse_matrix<M, N>& m2) 
+		{
+			
+		}
+
+
 
 
 	private:
@@ -1394,7 +1402,6 @@ namespace algebra
 		//holds the column indices
 		std::vector<size_t> cols;
 		//holds the index of the first value in every row
-		//sentinel value of -1 indicates an empty row
 		size_t ia[row_rank + 1];
 
 
@@ -1443,6 +1450,14 @@ namespace algebra
 		const matrix<M, N>& m2)
 	{
 		return matrix<M, N>::sum(m1, m2);
+	}
+
+	template <class M, class N>
+	sparse_matrix<M, N> operator+ (
+		const sparse_matrix<M, N>& m1,
+		const sparse_matrix<M, N>& m2)
+	{
+		return sparse_matrix<M, N>::sum(m1, m2);
 	}
 
 	template <class M, class N>
