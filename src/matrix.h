@@ -1254,21 +1254,6 @@ namespace algebra
 		}
 
 	private:
-		friend std::ostream& operator<<(std::ostream& os, const _Self& mat) {
-			std::string newline = "";
-			std::string space = "";
-			os << "[";
-			for (size_t i = 0; i < row_rank; i++) {
-				os << newline;
-				for (size_t j = 0; j < column_rank; j++) {
-					os << space << mat(i, j);
-					space = " ";
-				}
-				newline = "\n";
-			}
-			os << "]";
-			return os;
-		}
 		std::vector<value_type> m_values;
 	};
 

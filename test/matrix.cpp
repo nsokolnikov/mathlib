@@ -106,9 +106,7 @@ void test_matrices() {
 		2,2,2
 	};
 
-	std::stringstream test;
-	test << m3;
-	test::log(test.str().c_str());
+
 	
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
 
