@@ -1,14 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLib", "MathLib.vcxproj", "{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralNet", "NeuralNet\NeuralNet.vcxproj", "{501F45CF-F374-40E4-B035-0D709BDC8A08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		neural|Win32 = neural|Win32
+		neural|x64 = neural|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
@@ -17,10 +21,26 @@ Global
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Debug|Win32.Build.0 = Debug|Win32
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Debug|x64.ActiveCfg = Debug|x64
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Debug|x64.Build.0 = Debug|x64
+		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.neural|Win32.ActiveCfg = Release|Win32
+		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.neural|Win32.Build.0 = Release|Win32
+		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.neural|x64.ActiveCfg = Release|x64
+		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.neural|x64.Build.0 = Release|x64
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Release|Win32.ActiveCfg = Release|Win32
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Release|Win32.Build.0 = Release|Win32
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Release|x64.ActiveCfg = Release|x64
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Release|x64.Build.0 = Release|x64
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.Debug|Win32.ActiveCfg = Debug|Win32
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.Debug|Win32.Build.0 = Debug|Win32
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.Debug|x64.ActiveCfg = Debug|x64
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.Debug|x64.Build.0 = Debug|x64
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.neural|Win32.ActiveCfg = Release|Win32
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.neural|Win32.Build.0 = Release|Win32
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.neural|x64.ActiveCfg = Release|x64
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.neural|x64.Build.0 = Release|x64
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.Release|Win32.ActiveCfg = Release|Win32
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.Release|Win32.Build.0 = Release|Win32
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.Release|x64.ActiveCfg = Release|x64
+		{501F45CF-F374-40E4-B035-0D709BDC8A08}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
