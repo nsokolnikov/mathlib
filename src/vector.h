@@ -172,7 +172,7 @@ namespace algebra
 	// add offset to iterator
 	template<class _Vector> inline
 	const_vector_iterator<_Vector> operator+(
-	typename const_vector_iterator<_Vector>::difference_type offset,
+		typename const_vector_iterator<_Vector>::difference_type offset,
 		const_vector_iterator<_Vector> right)
 	{
 		return (right += offset);
@@ -270,7 +270,7 @@ namespace algebra
 	// add offset to iterator
 	template<class _Vector> inline
 	vector_iterator<_Vector> operator+(
-	typename vector_iterator<_Vector>::difference_type offset,
+		typename vector_iterator<_Vector>::difference_type offset,
 		vector_iterator<_Vector> right)
 	{
 		return (right += offset);
@@ -279,13 +279,13 @@ namespace algebra
 	template<class _Vector>
 	struct std::_Is_checked_helper<typename const_vector_iterator<_Vector> >
 		: public std::true_type
-	{	// mark const_row_iterator as checked
+	{	// mark const_vector_iterator as checked
 	};
 
 	template<class _Vector>
 	struct std::_Is_checked_helper<typename vector_iterator<_Vector> >
 		: public std::true_type
-	{	// mark row_iterator as checked
+	{	// mark vector_iterator as checked
 	};
 
 	template <class D>
@@ -424,7 +424,7 @@ namespace algebra
 
 		vector_iterator end()
 		{
-			row_iterator it(*this);
+			vector_iterator it(*this);
 			it += _Self::rank;
 			return it;
 		}
