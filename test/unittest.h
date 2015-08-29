@@ -69,6 +69,7 @@ public:
 		static std::string log = "ASSERT FAILED: ";
 		
 		verbose((log + message).c_str());
+		std::cout.flush();
 
 		throw test_exception(message);
 	}
@@ -86,6 +87,7 @@ public:
 
 		static std::string log = "TEST FAILED: ";
 		verbose((log + message).c_str());
+		std::cout.flush();
 
 		throw test_exception(message);
 	}
@@ -161,7 +163,8 @@ struct scenario
 		{
 			std::string failure = log + name + ": FAILED";
 			test::log(failure.c_str());
-			
+			std::cout.flush();
+
 			throw test_exception(failure.c_str());
 		}
 	}

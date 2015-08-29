@@ -14,6 +14,7 @@ namespace algebra
 	{
 		typedef typename dimension<R::rank + 1> P;
 		typedef typename matrix<R, P> solution;
+		typedef typename solution::value_type value_type;
 
 		// Initialize solution matrix from the input
 		// TODO: simplify using std::copy when column and vector iterators are implemented.
@@ -28,7 +29,7 @@ namespace algebra
 			// All values in this row before the current column are zeros already, so skip them.
 			auto itRow = m.crow_begin(col) + col, itRowEnd = m.crow_end(col);
 
-			if (0.0 == *itRow)
+			if (number_traits<value_type>::zero() == *itRow)
 				return false;
 
 			// Add current row to all other rows in the matrix to make
@@ -40,11 +41,11 @@ namespace algebra
 					// All values of the main row before the current column are zeros already,
 					// so skip them because it does not affect the end result.
 					auto itCur = m.row_begin(row) + col;
-					const double factor = -(*itCur) / (*itRow);
+					const value_type factor = -(*itCur) / (*itRow);
 
 					// Transform corrent row by adding main row with the right multiplier.
 					std::transform(itRow, itRowEnd, itCur, itCur,
-						[&factor](const double& cur, const double& other) { return cur * factor + other; });
+						[&factor](const value_type& cur, const value_type& other) { return cur * factor + other; });
 				}
 			}
 		}
