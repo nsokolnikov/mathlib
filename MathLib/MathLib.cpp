@@ -142,38 +142,7 @@ void test_daily_volume()
 
 int _tmain(int /*argc*/, _TCHAR* /*argv[]*/)
 {
-	test_daily_volume();
-
-	machine_learning::neural_network<D3, D1> l;
-	algebra::vector<D3> positive{ 0.5, 10.0, 0.5 };
-	algebra::vector<D3> negative{ 1.0, 1.0, 1.0 };
-	algebra::vector<D1> positive_target{ 1.0 };
-	algebra::vector<D1> negative_target{ 0.0 };
-
-	machine_learning::neural_network<D3, D5, D1> n;
-
-	const double rate = 0.01;
-
-	for (int i = 0; i < 200000; ++i)
-	{
-		l.train(positive, positive_target, rate);
-		n.train(positive, positive_target, rate);
-
-		l.train(negative, negative_target, rate);
-		n.train(negative, negative_target, rate);
-	}
-
-	auto out = l.process(positive);
-	auto nout = n.process(positive);
-	out = l.process(negative);
-	nout = n.process(negative);
-
-	for (int i = 0; i < 100; ++i)
-	{
-		algebra::vector<D3> test{ 0.9, 127.0, 4.9 + (1 * i) };
-		out = l.process(test);
-		nout = n.process(test);
-	}
+	//test_daily_volume();
 
 	//test change
 	run_tests();
