@@ -21,6 +21,9 @@ void run_tests()
 		test_matrix_column_iterators();
 		test_matrix_view_row_iterators();
 		test_matrix_view_column_iterators();
+
+		test_vector_iterators();
+
 		test_solve();
 
 		test::log("===========================================");

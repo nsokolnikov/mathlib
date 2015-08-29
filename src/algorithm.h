@@ -16,13 +16,10 @@ namespace algebra
 		typedef typename matrix<R, P> solution;
 		typedef typename solution::value_type value_type;
 
-		// Initialize solution matrix from the input
-		// TODO: simplify using std::copy when column and vector iterators are implemented.
+		// Initialize solution matrix from the input and copy input vector
+		// into the last column of the solution matrix.
 		solution m = a.resize<R, P>();
-		for (size_t i = 0; i < R::rank; ++i)
-		{
-			m(i, R::rank) = b(i);
-		}
+		std::copy(b.begin(), b.end(), m.column_begin(R::rank));
 
 		for (size_t col = 0; col < R::rank; ++col)
 		{
