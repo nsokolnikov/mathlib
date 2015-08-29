@@ -74,7 +74,7 @@ void test_matrices() {
 	algebra::matrix<D3, D3> m4_elempow2{
 		100,         400,         900,
 		1600,        2500,        3600,
-		4900,        6400 ,       8100
+		4900,        6400,       8100
 	};
 
 	algebra::matrix<D3, D3> m5_m8{
@@ -105,8 +105,6 @@ void test_matrices() {
 		2,2,2,
 		2,2,2
 	};
-
-
 	
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
 
@@ -121,24 +119,28 @@ void test_matrices() {
 
 	test::assert(m4 * 1 == m3, "Test failed: Multiply matrix by value");
 
-	auto m_mult = m5*m8;
+	auto m_mult = m5 * m8;
 	test::assert(m_mult != m5 && m_mult != m8, "Test failed: non-destructive multiplication(matrix * matrix)");
 	test::assert(m_mult == m5_m8, "Test failed: matrix * matrix");
+
 	auto m2_mult = m5 * 2;
 	test::assert(m2_mult == m5_2, "Test failed: matrix * value_type");
 	test::assert(m5 != m2_mult, "Test failed: non-destructive matrix * value_type");
 
-	test::assert(m4.element_pow(2) == m4_elempow2, "Test failed: element-wise power");
+	auto m4_copy(m4);
+	test::assert(m4_copy.element_pow(2) == m4_elempow2, "Test failed: element-wise power");
 	test::assert((m4 ^ 2) == m4_pow, "Test failed: raise matrix to a power");
 
 	test::assert(m4_abs.abs() == m4, "Test failed: absolute value");
+
 	test::assert(algebra::matrix<D3, D4>::eye() == eye, "Test failed: eye()");
 	test::assert(algebra::matrix<D3, D3>::eye() == m7, "Test failed: eye()");
+
 	test::assert(m3.max() == 90, "Test failed: max()");
 	test::assert(m3.min() == 10, "Test failed: min()");
-	test::assert(m3.accumulate() == 450, "Test failed: accu()");
+
+	test::assert(m3.accumulate() == 450, "Test failed: accumulate()");
 	test::assert(algebra::matrix<D3, D3>::ones() == m8, "Test failed: ones");
-	test::assert(algebra::matrix<D3, D3>::ones(2) == m_twos, "Test failed: ones with args");
 
 	auto m10 = m8.resize<D3, D4>();
 
