@@ -1276,26 +1276,8 @@ namespace algebra
 			return (*this);
 		}
 
-		//_Self operator^ (
-		//	const value_type power)
-		//{
-		//	_Self result = (*this);
-		//	for (auto& p : result.m_values) {
-		//		for (value_type s : p->second) {
-		//			//					s = s^power;
-		//			
-		//		}
-		//	}
-		//	
-		//	return result;
-		//}
-		//	
 
-
-
-		//Consult on whether this operator should even exist 
-		//for sparse_matrix. 
-		const value_type& operator() (
+		const value_type operator() (
 			const size_t row,
 			const size_t column) const
 		{
@@ -1388,7 +1370,12 @@ namespace algebra
 			const sparse_matrix<M, N>& m1,
 			const sparse_matrix<M, N>& m2) 
 		{
-			
+			if (m1.is_yale() && m2.is_yale()) {
+				size_t i = 0;
+			}
+			else {
+				throw std::invalid_argument("Call to_yale() first on this matrix");
+			}
 		}
 
 
