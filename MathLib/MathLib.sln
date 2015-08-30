@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLib", "MathLib.vcxproj", "{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralNetwork", "..\samples\NeuralNetwork\NeuralNetwork.vcxproj", "{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,14 @@ Global
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Release|Win32.Build.0 = Release|Win32
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Release|x64.ActiveCfg = Release|x64
 		{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}.Release|x64.Build.0 = Release|x64
+		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Debug|Win32.Build.0 = Debug|Win32
+		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Debug|x64.ActiveCfg = Debug|x64
+		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Debug|x64.Build.0 = Debug|x64
+		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Release|Win32.ActiveCfg = Release|Win32
+		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Release|Win32.Build.0 = Release|Win32
+		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Release|x64.ActiveCfg = Release|x64
+		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
