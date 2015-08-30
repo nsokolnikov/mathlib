@@ -171,7 +171,7 @@ namespace algebra
 
 	// add offset to iterator
 	template<class _Vector> inline
-		const_vector_iterator<_Vector> operator+(
+	const_vector_iterator<_Vector> operator+(
 		typename const_vector_iterator<_Vector>::difference_type offset,
 		const_vector_iterator<_Vector> right)
 	{
@@ -269,7 +269,7 @@ namespace algebra
 
 	// add offset to iterator
 	template<class _Vector> inline
-		vector_iterator<_Vector> operator+(
+	vector_iterator<_Vector> operator+(
 		typename vector_iterator<_Vector>::difference_type offset,
 		vector_iterator<_Vector> right)
 	{
