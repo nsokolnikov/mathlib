@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include <unittest.h>
-#include <neuralnet.h>
 
 int _tmain(int /*argc*/, _TCHAR* /*argv[]*/)
 {
