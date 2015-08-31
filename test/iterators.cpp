@@ -378,9 +378,10 @@ void test_matrix_view_column_iterators()
 
 	test::verbose("Constant view iterators: view");
 	test_iterator_operators(v.ccolumn_begin(0), v.ccolumn_end(0), _View::column_rank);
-	sc.pass();
+
 	test::verbose("Writable iterators: view");
 	test_iterator_operators(v.column_begin(0), v.column_end(0), _View::column_rank);
+
 	test::verbose("Dereference Operators: const view");
 	for (size_t row = 0; row < _ConstView::row_rank; ++row)
 	{
@@ -396,7 +397,6 @@ void test_matrix_view_column_iterators()
 				"Reading past row end: const iterator");
 		}
 	}
-
 	
 	test::verbose("Dereference Operators: view");
 	for (size_t col = 0; col < _View::column_rank; ++col)
@@ -412,6 +412,7 @@ void test_matrix_view_column_iterators()
 			test::assert(value == (*(v.column_begin(col) + row) = value), ("Test Failed: value == (*(v.row_begin(row) + col) = value)" + test.str()).c_str());
 			test::assert(m(row, col + 1) == value, ("Test Failed: m(row, col + 1) == value" + test.str()).c_str());
 		}
+
 		test::check_exception<std::invalid_argument>(
 			[&v, col]() { *(v.ccolumn_end(col));  },
 			"Reading past row end: const iterator");
@@ -423,5 +424,66 @@ void test_matrix_view_column_iterators()
 			"Writing past row end: iterator");
 	}
 	
+	sc.pass();
+}
+
+void test_vector_iterators()
+{
+	scenario sc("Vector Iterators Test");
+
+	typedef algebra::vector<D4> _Vector;
+
+	_Vector v{ 10, 20, 30, 40 };
+
+	{
+		test::verbose("Constructor tests: positive");
+
+		algebra::const_vector_iterator<_Vector> cit1(v);
+
+		algebra::const_vector_iterator<_Vector> it1(v);
+
+		auto ccopy = cit1;
+		auto copy = it1;
+	}
+
+	test::verbose("Constant vector iterators");
+	test_iterator_operators(v.cbegin(), v.cend(), _Vector::rank);
+
+	test::verbose("Writable vector iterators");
+	test_iterator_operators(v.begin(), v.end(), _Vector::rank);
+
+	test::verbose("Dereference Operators: const vector");
+	for (size_t i = 0; i < _Vector::rank; ++i)
+	{
+		std::stringstream test;
+		test << " for i=" << i << "; value = " << v(i) << "; itvalue = " << *(v.begin() + i);
+		test::assert(v(i) == *(v.begin() + i), ("Test Failed: v(i) == *(v.begin() + i)" + test.str()).c_str());
+	}
+
+	test::check_exception<std::invalid_argument>(
+		[&v]() { *(v.end());  },
+		"Reading past vector end: const iterator");
+
+	test::verbose("Dereference Operators: vector");
+	for (size_t i = 0; i < _Vector::rank; ++i)
+	{
+		std::stringstream test;
+		test << " for i=" << i;
+		test::assert(v(i) == *(v.begin() + i), ("Test Failed: v(i) == *(v.begin() + i)" + test.str()).c_str());
+		test::assert(v(i) == *(v.cbegin() + i), ("Test Failed: v(i) == *(v.cbegin() + i)" + test.str()).c_str());
+
+		double value = i * 100.0;
+		test::assert(value == (*(v.begin() + i) = value), ("Test Failed: (*(v.begin() + i) = value)" + test.str()).c_str());
+		test::assert(v(i) == value, ("Test Failed: v(i) == value" + test.str()).c_str());
+	}
+
+	test::check_exception<std::invalid_argument>(
+		[&v]() { *(v.cend());  },
+		"Reading past vector end: const iterator");
+
+	test::check_exception<std::invalid_argument>(
+		[&v]() { *(v.end());  },
+		"Reading past vector end: iterator");
+
 	sc.pass();
 }

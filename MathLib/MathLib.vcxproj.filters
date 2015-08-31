@@ -43,6 +43,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mnist.h">
+    <ClInclude Include="..\src\neuralnet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -75,6 +76,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mnist.cpp">
+    <ClCompile Include="..\test\neuralnet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -184,6 +184,10 @@ void test_matrix_column_iterators();
 void test_matrix_view_row_iterators();
 void test_matrix_view_column_iterators();
 
+void test_vector_iterators();
+
 void test_solve();
+
+void test_neural_network();
 
 void run_tests();
