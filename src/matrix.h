@@ -816,13 +816,6 @@ namespace algebra
 		}
 		
 
-		matrix(std::vector<value_type> data) {
-			if (data.size() != _Self::column_rank * _Self::row_rank)
-				throw std::invalid_argument("Initializer size does not match matrix rank.");
-
-			m_values.assign(data.begin(), data.end());
-		}
-
 		bool empty() const
 		{
 			return m_values.size() == 0;

@@ -151,7 +151,7 @@ void test_matrices() {
 
 	sc.pass();
 }
-<<<<<<< HEAD
+
 
 void test_sparse_matrices() {
 	scenario sc("Sparse Matrices Test");
@@ -229,5 +229,4 @@ void test_sparse_matrices() {
 	sc.pass();
 
 }
-=======
->>>>>>> master
+
