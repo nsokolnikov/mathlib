@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include <neuralnet.h>
 #include <iostream>
-#include "mnist.h"
+
 
 struct D3 : public algebra::dimension<3> {};
 struct D7 : public algebra::dimension<7> {};
@@ -70,7 +70,6 @@ int _tmain(int /*argc*/, _TCHAR* /*argv[]*/)
 {
 
 
-	load_mnist();
 	// Initialize ideal load targets. The set imitates weekly activity
 	// assuming 5 business days and 2 hollidays.
 	std::vector<double> traning{ 3500.0, 50000.0, 60000.0, 62000.0, 58000.0, 55000.0, 4000.0 };
