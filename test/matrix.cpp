@@ -213,16 +213,12 @@ void test_sparse_matrices() {
 	m3.print_yale();
 	for (size_t i = 1; i < 3; i++) {
 		for (size_t j = 0; j < 3; j++) {
-			double yale = m3.yale_get(i, j);
-			double regular = m3(i, j);
 			test::assert(m3.yale_get(i, j) == m3(i, j), "Test failed: yale random access");
 		}
 	}
 	m10.to_yale();
 	for (size_t i = 1; i < 4; i++) {
 		for (size_t j = 0; j < 6; j++) {
-			double yale = m10.yale_get(i, j);
-			double regular = m10(i, j);
 			test::assert(m10.yale_get(i, j) == m10(i, j), "Test failed: yale random access");
 		}
 	}

@@ -3,10 +3,8 @@
 
 #include "stdafx.h"
 #include <unittest.h>
-#include <mnist.h>
 int _tmain(int /*argc*/, _TCHAR* /*argv[]*/)
 {
 	run_tests();
-	load_mnist();
 	return 0;
 }
