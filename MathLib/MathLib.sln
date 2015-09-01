@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLib", "MathLib.vcxproj"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralNetwork", "..\samples\NeuralNetwork\NeuralNetwork.vcxproj", "{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextRecognition", "..\samples\TextRecognition\TextRecognition.vcxproj", "{8EE9BA1F-6762-4080-B383-D70C0F5789FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -31,6 +33,14 @@ Global
 		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Release|Win32.Build.0 = Release|Win32
 		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Release|x64.ActiveCfg = Release|x64
 		{DB30DAB2-D43D-42A8-9DE9-1F6855F8B3CD}.Release|x64.Build.0 = Release|x64
+		{8EE9BA1F-6762-4080-B383-D70C0F5789FB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8EE9BA1F-6762-4080-B383-D70C0F5789FB}.Debug|Win32.Build.0 = Debug|Win32
+		{8EE9BA1F-6762-4080-B383-D70C0F5789FB}.Debug|x64.ActiveCfg = Debug|x64
+		{8EE9BA1F-6762-4080-B383-D70C0F5789FB}.Debug|x64.Build.0 = Debug|x64
+		{8EE9BA1F-6762-4080-B383-D70C0F5789FB}.Release|Win32.ActiveCfg = Release|Win32
+		{8EE9BA1F-6762-4080-B383-D70C0F5789FB}.Release|Win32.Build.0 = Release|Win32
+		{8EE9BA1F-6762-4080-B383-D70C0F5789FB}.Release|x64.ActiveCfg = Release|x64
+		{8EE9BA1F-6762-4080-B383-D70C0F5789FB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
