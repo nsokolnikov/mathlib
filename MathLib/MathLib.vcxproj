@@ -22,6 +22,7 @@
     <ProjectGuid>{E3AF06FC-11A1-4AD3-AE8D-CAFE84268164}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MathLib</RootNamespace>
+    <ProjectName>MathLib</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
