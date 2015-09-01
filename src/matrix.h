@@ -1335,6 +1335,7 @@ namespace algebra
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				m_values[i] = std::unique_ptr<sparse_pair>(new sparse_pair());
 			}
+			to_yale();
 		}
 
 		sparse_matrix(std::vector<value_type> data)
@@ -1358,16 +1359,21 @@ namespace algebra
 				}
 			}
 
+			to_yale();
+
 	
 		}
 
 		sparse_matrix(const sparse_matrix& other)
 			: m_values(other.m_values)
 		{
+			to_yale();
 		}
 		sparse_matrix(sparse_matrix&& other)
 			: m_values(std::move(other.m_values))
-		{}
+		{
+			to_yale();
+		}
 		
 		sparse_matrix(std::initializer_list<value_type> data_list)
 			: m_values(_Self::row_rank)
@@ -1390,6 +1396,7 @@ namespace algebra
 					}
 				}
 			}
+			to_yale();
 		}
 		
 		_Self& operator=(const _Self& other)
@@ -1460,26 +1467,22 @@ namespace algebra
 			test::log(log.str().c_str());
 		}
 
-		void to_yale() {
-			if (yale) return;
-
-			size_t index = 0;
-			for (size_t i = 0; i < m_values.size(); ++i) {
-				ia[i] = index; 
-				auto& elem = m_values[i];
-				for (size_t j = 0; j < elem->first.size(); ++j) {
-					values.push_back(elem->second[j]);
-					cols.push_back(elem->first[j]);
-					++index;
+		void print_matrix() const {
+			std::stringstream log;
+			for (size_t i = 0; i < row_rank; ++i)
+			{
+				for (size_t j = 0; j < column_rank; ++j)
+				{
+					log << " " << (*this)(i, j);
 				}
+				log << "\n";
+
 			}
-			ia[row_rank] = values.size();
-			
+			test::log(log.str().c_str());
 
-
-			yale = true;
 
 		}
+
 
 		value_type yale_get(size_t row, size_t column) {
 			if (column >= _Self::column_rank)
@@ -1501,23 +1504,112 @@ namespace algebra
 
 		}
 
-
-		_Self sum(
+//sparse_pair implementation(first draft)
+		static _Self sum(
 			const sparse_matrix<M, N>& m1,
-			const sparse_matrix<M, N>& m2) 
+			const sparse_matrix<M, N>& m2)
 		{
-			if (m1.is_yale() && m2.is_yale()) {
-				size_t i = 0;
+			_Self result;
+			auto resultrow = result.m_values.begin();
+			for (size_t i = 0; i < row_rank; ++i)
+			{
+				auto pair1 = *m1.m_values[i];
+				auto pair2 = *m2.m_values[i];
+				size_t c1 = 0;
+				size_t c2 = 0;
+				while (c1 < pair1.first.size() && c2 < pair2.first.size()) {
+					while (pair1.first[c1] < pair2.first[c2]) {
+						result.m_values[i]->first.push_back(pair1.first[c1]);
+						result.m_values[i]->second.push_back(pair1.second[c1]);
+						++c1;
+					}
+					while (pair1.first[c1] > pair2.first[c2]) {
+						result.m_values[i]->first.push_back(pair2.first[c2]);
+						result.m_values[i]->second.push_back(pair2.second[c2]);
+						++c2;
+					}
+					result.m_values[i]->first.push_back(pair1.first[c1]);
+					result.m_values[i]->second.push_back(pair1.second[c1] + pair2.second[c2]);
+					++c1;
+					++c2;
+				}
+				while (c1 < pair1.first.size()) {
+					result.m_values[i]->first.push_back(pair1.first[c1]);
+					result.m_values[i]->second.push_back(pair1.second[c1]);
+					++c1;
+				}
+
+				while (c2 < pair2.first.size()) {
+					result.m_values[i]->first.push_back(pair2.first[c2]);
+					result.m_values[i]->second.push_back(pair2.second[c2]);
+					++c2;
+				}
 			}
-			else {
-				throw std::invalid_argument("Call to_yale() first on this matrix");
+
+			return result;
+		}
+
+		//sparse_pair implementation(first draft)
+		static _Self subtract(
+			const sparse_matrix<M, N>& m1,
+			const sparse_matrix<M, N>& m2)
+		{
+			_Self result;
+			auto resultrow = result.m_values.begin();
+			for (size_t i = 0; i < row_rank; ++i)
+			{
+				auto pair1 = *m1.m_values[i];
+				auto pair2 = *m2.m_values[i];
+				size_t c1 = 0;
+				size_t c2 = 0;
+				while (c1 < pair1.first.size() && c2 < pair2.first.size()) {
+					while (pair1.first[c1] < pair2.first[c2]) {
+						result.m_values[i]->first.push_back(pair1.first[c1]);
+						result.m_values[i]->second.push_back(pair1.second[c1]);
+						++c1;
+					}
+					while (pair1.first[c1] > pair2.first[c2]) {
+						result.m_values[i]->first.push_back(pair2.first[c2]);
+						result.m_values[i]->second.push_back(value_type_traits::negate(pair2.second[c2]));
+						++c2;
+					}
+					if (!value_type_traits::is_zero(pair1.second[c1] - pair2.second[c2])) {
+						result.m_values[i]->first.push_back(pair1.first[c1]);
+						result.m_values[i]->second.push_back(pair1.second[c1] - pair2.second[c2]);
+					}
+					++c1;
+					++c2;
+				}
+				while (c1 < pair1.first.size()) {
+					result.m_values[i]->first.push_back(pair1.first[c1]);
+					result.m_values[i]->second.push_back(pair1.second[c1]);
+					++c1;
+				}
+
+				while (c2 < pair2.first.size()) {
+					result.m_values[i]->first.push_back(pair2.first[c2]);
+					result.m_values[i]->second.push_back(value_type_traits::negate(pair2.second[c2]));
+					++c2;
+				}
 			}
+			return result;
 		}
 
 
-
-
 	private:
+		void to_yale() {
+			size_t index = 0;
+			for (size_t i = 0; i < m_values.size(); ++i) {
+				ia[i] = index; 
+				auto& elem = m_values[i];
+				for (size_t j = 0; j < elem->first.size(); ++j) {
+					values.push_back(elem->second[j]);
+					cols.push_back(elem->first[j]);
+					++index;
+				}
+			}
+			ia[row_rank] = values.size();
+		}
 		//TODO: find some way of using arrays instead of std::vector(for speed)
 		bool yale = false;
 		//holds the values
@@ -1583,6 +1675,14 @@ namespace algebra
 		const sparse_matrix<M, N>& m2)
 	{
 		return sparse_matrix<M, N>::sum(m1, m2);
+	}
+
+	template <class M, class N>
+	sparse_matrix<M, N> operator- (
+		const sparse_matrix<M, N>& m1,
+		const sparse_matrix<M, N>& m2)
+	{
+		return sparse_matrix<M, N>::subtract(m1, m2);
 	}
 
 	template <class M, class N>

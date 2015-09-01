@@ -204,24 +204,38 @@ void test_sparse_matrices() {
 		70, 80, 90, 20, 40, 20,
 		0,  0,   0,  0,  0,  1};
 
+	algebra::sparse_matrix<D3, D3> m11{
+		2, 1, 1,
+		1, 2, 1,
+		1, 1, 2
+	};
+
+	algebra::sparse_matrix<D3, D3> m12{
+		0, -1, -1,
+		-1, 0, -1,
+		-1, -1, 0
+	};
+
+
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
 	test::assert(m3(0, 0) == 10, "Test Failed: matrix random access");
 	test::assert(m7(1, 0) == 0, "Test Failed: random access a zero element");
 	test::assert(m3 == m4, "Test failed: equality by value");
 	test::assert(m3 == m5.transpose(), "Test failed: Transpose");
-	m3.to_yale();
 	m3.print_yale();
 	for (size_t i = 1; i < 3; i++) {
 		for (size_t j = 0; j < 3; j++) {
 			test::assert(m3.yale_get(i, j) == m3(i, j), "Test failed: yale random access");
 		}
 	}
-	m10.to_yale();
 	for (size_t i = 1; i < 4; i++) {
 		for (size_t j = 0; j < 6; j++) {
 			test::assert(m10.yale_get(i, j) == m10(i, j), "Test failed: yale random access");
 		}
 	}
+	test::assert(m7 + m8 == m11, "Test failed: Regular sparse addition");
+	test::assert(m7 - m8 == m12, "Test failed: Regular sparse subtraction");
+	auto m = m7 - m8;
 	sc.pass();
 
 }

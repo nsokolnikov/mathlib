@@ -79,5 +79,9 @@ namespace algebra
 			const double error = 1.0e-10;
 			return std::abs(d) < error;
 		}
+
+		static double negate(const double& d) {
+			return -d;
+		}
 	};
 }
