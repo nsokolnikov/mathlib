@@ -162,6 +162,12 @@ void test_sparse_matrices() {
 		40, 50, 60,
 		70, 80, 90 };
 
+	algebra::matrix<D3, D4> eye{
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0
+	};
+
 	algebra::sparse_matrix<D3, D3> m4(std::vector<double>{
 		10, 20, 30,
 		40, 50, 60,
@@ -216,7 +222,7 @@ void test_sparse_matrices() {
 		-1, -1, 0
 	};
 
-
+	test::verbose("Sparse Matrix - Methods");
 	test::assert(m3 == m3, "Test failed: equality of the same matrix");
 	test::assert(m3(0, 0) == 10, "Test Failed: matrix random access");
 	test::assert(m7(1, 0) == 0, "Test Failed: random access a zero element");
@@ -235,7 +241,12 @@ void test_sparse_matrices() {
 	}
 	test::assert(m7 + m8 == m11, "Test failed: Regular sparse addition");
 	test::assert(m7 - m8 == m12, "Test failed: Regular sparse subtraction");
-	auto m = m7 - m8;
+	
+
+	test::verbose("Sparse Matrix - Inherited methods");
+	test::assert(m7 * m5 == m5, "Test failed: Matrix multiplication");
+	test::assert(algebra::sparse_matrix<D3, D4>::eye() == eye, "Test failed: eye()");
+
 	sc.pass();
 
 }

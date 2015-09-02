@@ -778,7 +778,7 @@ namespace algebra
 		static_assert(_Self::column_rank <= 10000 && _Self::row_rank <= 10000, "Matrix dimensions cannot exceed 10000.");
 
 		typedef double value_type;
-
+		
 		typedef typename const_column_iterator<const _Self> const_column_iterator;
 		typedef typename column_iterator<_Self> column_iterator;
 		typedef typename const_row_iterator<const _Self> const_row_iterator;
@@ -1117,7 +1117,7 @@ namespace algebra
 			{
 				if (t > result) result = t;
 			}
-
+			
 			return result;
 		}
 
@@ -1134,21 +1134,22 @@ namespace algebra
 		
 		static _Self eye()
 		{
-			_Self result;
 			const value_type _Zero = number_traits<value_type>::zero();
+			_Self result;
 
-			result.m_values.reserve(_Self::row_rank * _Self::column_rank);
-			for (size_t i = 0; i < _Self::row_rank * _Self::column_rank; ++i)
+			for (size_t i = 0; i < _Self::row_rank; i++)
 			{
-				if (i % _Self::column_rank == i / _Self::column_rank)
+				for (size_t j = 0; j < _Self::column_rank; j++)
 				{
-					result.m_values.push_back(1);
-				}
-				else
-				{
-					result.m_values.push_back(_Zero);
+					if (i == j) {
+						result(i, j) = 1;
+					}
+					else {
+						result(i, j) = _Zero;
+					}
 				}
 			}
+			
 
 			return result;
 		}
@@ -1158,12 +1159,12 @@ namespace algebra
 			const value_type _One = (number_traits<value_type>::zero() + 1);
 
 			_Self result;
-			result.m_values.reserve(_Self::row_rank * _Self::column_rank);
-			for (size_t i = 0; i < _Self::row_rank * _Self::column_rank; ++i)
-			{
-				result.m_values.push_back(_One);
-			}
 
+			for (size_t i = 0; i < _Self::row_rank; ++i) {
+				for (size_t j = 0; j < _Self::row_rank; ++j) {
+					result(i, j) = _One;
+				}
+			}
 			return result;
 		}
 
@@ -1647,7 +1648,7 @@ namespace algebra
 				for (size_t col = 0; col < P::rank; ++col)
 				{
 					typename matrix<M, N>::value_type cell = number_traits<typename matrix<M, N>::value_type>::zero();
-
+					
 					for (size_t i = 0; i < N::rank; ++i)
 					{
 						cell += m1(row, i) * m2(i, col);
@@ -1717,11 +1718,7 @@ namespace algebra
 		return matrix<M, M>::pow(m, C);
 	}
 
-	template <class M, class N>
-	matrix<M, N> operator^ (const matrix<M, N>& m, const double C)
-	{
-		return matrix<M, N>::pow(m, C);
-	}
+
 
 
 
