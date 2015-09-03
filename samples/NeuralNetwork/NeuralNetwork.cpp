@@ -9,6 +9,7 @@
 #include <neuralnet.h>
 #include <iostream>
 
+
 struct D3 : public algebra::dimension<3> {};
 struct D7 : public algebra::dimension<7> {};
 struct D8 : public algebra::dimension<8> {};
@@ -67,6 +68,8 @@ void simulate_distribution(
 
 int _tmain(int /*argc*/, _TCHAR* /*argv[]*/)
 {
+
+
 	// Initialize ideal load targets. The set imitates weekly activity
 	// assuming 5 business days and 2 hollidays.
 	std::vector<double> traning{ 3500.0, 50000.0, 60000.0, 62000.0, 58000.0, 55000.0, 4000.0 };
