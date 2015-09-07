@@ -3,10 +3,10 @@
 #include "mnist.h"
 #include <iostream>
 
-struct D25 : public algebra::dimension<25> {};
+struct D49 : public algebra::dimension<49> {};
 struct D10 : public algebra::dimension<10> {};
 
-typedef machine_learning::neural_network<D784, D25, D10> oacr_network;
+typedef machine_learning::neural_network<D784, D49, D10> oacr_network;
 
 void print_usage()
 {
@@ -17,9 +17,10 @@ void print_usage()
 	std::cout << "    data_path  Path to the MNIST training data set.\r\n";
 }
 
-const algebra::vector<D10>& get_target(int digit)
+const oacr_network::output& get_target(
+	int digit)
 {
-	static std::vector<algebra::vector<D10>> targets{
+	static std::vector<oacr_network::output> targets{
 		{ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 		{ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 		{ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
@@ -39,7 +40,7 @@ const algebra::vector<D10>& get_target(int digit)
 }
 
 const int get_result(
-	algebra::vector<D10>& output,
+	oacr_network::output& output,
 	double& confidence)
 {
 	double max = output(0);
@@ -74,18 +75,11 @@ std::vector<double> get_learning_rates(
 	return result;
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+void test_success_rate(
+	oacr_network& network,
+	const mnist_data& training,
+	std::string prefix)
 {
-	if (argc < 2)
-	{
-		print_usage();
-		return 1;
-	}
-
-	mnist_data training = load_mnist(std::wstring(argv[1]));
-
-	oacr_network network;
-
 	size_t errors = 0;
 	for (auto digit : training)
 	{
@@ -98,9 +92,24 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	std::cout << "Untrained success rate: " << ((double)(training.size() - errors) / (double)training.size()) << "\r\n";
+	std::cout << prefix.c_str() << " success rate: " << ((double)(training.size() - errors) / (double)training.size()) << "\r\n";
+}
 
-	std::vector<double> rates = get_learning_rates(2.5, 0.6, 10);
+int _tmain(int argc, _TCHAR* argv[])
+{
+	if (argc < 2)
+	{
+		print_usage();
+		return 1;
+	}
+
+	mnist_data training = load_mnist(std::wstring(argv[1]));
+
+	oacr_network network;
+
+	test_success_rate(network, training, "Untrained");
+
+	std::vector<double> rates = get_learning_rates(1.5, 0.7, 10);
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -132,10 +141,12 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			network.train(digit->second, get_target(digit->first), rate);
 		}
+
+		test_success_rate(network, training, "Test");
 	}
 
 	// Recognition
-	errors = 0;
+	size_t errors = 0;
 	size_t maxTests = 1000;
 	for (size_t i = 0; i < maxTests; ++i)
 	{
@@ -156,19 +167,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::cout << "Random sampling success rate: " << ((double)(maxTests - errors) / (double)maxTests) << "\r\n";
 
-	errors = 0;
-	for (auto digit : training)
-	{
-		auto result = network.process(digit.second);
-		double confidence;
-		int recognized = get_result(result, confidence);
-		if (digit.first != recognized)
-		{
-			++errors;
-		}
-	}
-
-	std::cout << "Full success rate: " << ((double)(training.size() - errors) / (double)training.size()) << "\r\n";
+	test_success_rate(network, training, "Full");
 
 	return 0;
 }
