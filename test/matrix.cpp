@@ -232,8 +232,10 @@ void test_sparse_matrices() {
 
 	test::assert(m7 + m8 == m11, "Test failed: Regular sparse addition");
 	test::assert(m7 - m8 == m12, "Test failed: Regular sparse subtraction");
-	
-
+	m6.set(0, 0, 1);
+	m6.set(1, 1, 1);
+	m6.set(2, 2, 1);
+	test::assert(m6 == m7, "Test failed: set");
 	test::verbose("Sparse Matrix - Inherited methods");
 	test::assert(m7 * m5 == m5, "Test failed: Matrix multiplication");
 	test::assert(algebra::sparse_matrix<D3, D4>::eye() == eye, "Test failed: eye()");

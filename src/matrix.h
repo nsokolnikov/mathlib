@@ -1392,15 +1392,7 @@ namespace algebra
 			}
 		}
 
-		bool empty() const {
-			size_t i = 0;
-			while (i < row_rank) {
-				if (!m_values[i]->first.empty())
-					return false;
-				++i;
-			}
-			return true;
-		}
+
 
 		bool empty() const {
 			size_t i = 0;
@@ -1459,9 +1451,11 @@ namespace algebra
 			}
 		}
 
-		void set(size_t row, size_t column, value_type elem) {
-
+		//Returns amount of elements in row
+		size_t row_length(size_t row) const {
+			return m_values[row]->first.size();
 		}
+
 
 
 
@@ -1577,8 +1571,28 @@ namespace algebra
 		}
 
 
-	private:
+		void set(size_t row, size_t col, value_type data) {
+			auto beg = m_values[row]->first.begin();
+			auto end = m_values[row]->first.end();
+			auto pos = std::lower_bound(beg, end, col) - beg;
+			if (algebra::number_traits<value_type>::is_zero(data)) { 
+				if (!algebra::number_traits<value_type>::is_zero((*this)(row, col))) {
 
+				}
+			}
+			else {
+				m_values[row]->first.insert(m_values[row]->first.begin() + pos, col);
+				m_values[row]->second.insert(m_values[row]->second.begin() + pos, data);
+			}
+		}
+
+		vector<size_t>::const_vector_iterator row_index_begin(size_t row) {
+			return m_values[row]->first.cbegin();
+		}
+		//vector<size_t>::const_vector_iterator row_index_end(size_t row) {
+		//	return m_values[row]->first.cbegin();
+		//}
+	private:
 		/*
 		Pair of vectors instead of vector of pairs allows the use of std::find to 
 		find the index of the datum. It's also faster. 
@@ -1604,15 +1618,17 @@ namespace algebra
 				for (size_t col = 0; col < P::rank; ++col)
 				{
 					typename sparse_matrix<M, N>::value_type cell = number_traits<typename sparse_matrix<M, N>::value_type>::zero();
-
-//					m1.m_values[row]->first.size();
-					for (size_t i = 0; i < N::rank; ++i)
+/*
+					m1.row_length(row);
+					auto beg = m1.row_index_begin(row);
+					auto end = m1.row_index_end(row)
+					for (auto beg = m1.row_index_begin(row); beg != m1.row_index_end(row); ++beg)
 					{
-						cell += m1(row, i) * m2(i, col);
+						cell += m1(row, beg) * m2(beg, col);
 					}
+					*/
 
-
-//					result(row, col) = cell;
+					result.set(row, col, cell);
 
 				}
 			}
