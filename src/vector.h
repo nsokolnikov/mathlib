@@ -318,6 +318,15 @@ namespace algebra
 			m_values.assign(data.begin(), data.end());
 		}
 
+		vector(const std::vector<value_type>& data)
+			: m_values()
+		{
+			if (data.size() != _Self::rank)
+				throw std::invalid_argument("Initializer size does not match vector rank.");
+
+			m_values.assign(data.begin(), data.end());
+		}
+
 		vector(const _Self& other)
 			: m_values(other.m_values)
 		{}
