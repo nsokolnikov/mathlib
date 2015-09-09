@@ -228,7 +228,7 @@ void test_sparse_matrices() {
 	test::assert(m7(1, 0) == 0, "Test Failed: random access a zero element");
 	test::assert(m3 == m4, "Test failed: equality by value");
 	test::assert(m3 == m5.transpose(), "Test failed: Transpose");
-	m3.print_yale();
+
 	for (size_t i = 1; i < 3; i++) {
 		for (size_t j = 0; j < 3; j++) {
 			test::assert(m3.yale_get(i, j) == m3(i, j), "Test failed: yale random access");
@@ -246,6 +246,7 @@ void test_sparse_matrices() {
 	test::verbose("Sparse Matrix - Inherited methods");
 	test::assert(m7 * m5 == m5, "Test failed: Matrix multiplication");
 	test::assert(algebra::sparse_matrix<D3, D4>::eye() == eye, "Test failed: eye()");
+
 
 	sc.pass();
 
