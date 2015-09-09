@@ -1401,6 +1401,16 @@ namespace algebra
 			}
 			return true;
 		}
+
+		bool empty() const {
+			size_t i = 0;
+			while (i < row_rank) {
+				if (!m_values[i]->first.empty())
+					return false;
+				++i;
+			}
+			return true;
+		}
 		
 		_Self& operator=(const _Self& other)
 		{
@@ -1568,6 +1578,7 @@ namespace algebra
 
 
 	private:
+
 		/*
 		Pair of vectors instead of vector of pairs allows the use of std::find to 
 		find the index of the datum. It's also faster. 
@@ -1600,7 +1611,9 @@ namespace algebra
 						cell += m1(row, i) * m2(i, col);
 					}
 
+
 //					result(row, col) = cell;
+
 				}
 			}
 		}
