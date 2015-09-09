@@ -1323,11 +1323,7 @@ namespace algebra
 		static_assert(_Self::column_rank <= 10000 && _Self::row_rank <= 10000, "Matrix dimensions cannot exceed 10000.");
 
 		typedef double value_type;
-		//Syntax errors on these lines, fix later
-		//typedef typename const_row_iterator<const _Self> const_row_iterator;
-		//typedef typename row_iterator<_Self> row_iterator;
-		//typedef typename const_column_iterator<const _Self> const_column_iterator;
-		//typedef typename column_iterator<_Self> column_iterator;
+
 
 
 		sparse_matrix()
@@ -1336,7 +1332,7 @@ namespace algebra
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				m_values[i] = std::unique_ptr<sparse_pair>(new sparse_pair());
 			}
-			to_yale();
+
 		}
 
 		sparse_matrix(std::vector<value_type> data)
@@ -1345,7 +1341,6 @@ namespace algebra
 			if (data.size() != _Self::column_rank * _Self::row_rank)
 				throw std::invalid_argument("Initializer size does not match matrix rank.");
 
-			//If there's a way to put nullptr in here instead of initializing them, it would save memory.
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				m_values[i] = std::unique_ptr<sparse_pair>(new sparse_pair());
 			}
@@ -1360,7 +1355,7 @@ namespace algebra
 				}
 			}
 
-			to_yale();
+
 
 	
 		}
@@ -1368,12 +1363,12 @@ namespace algebra
 		sparse_matrix(const sparse_matrix& other)
 			: m_values(other.m_values)
 		{
-			to_yale();
+
 		}
 		sparse_matrix(sparse_matrix&& other)
 			: m_values(std::move(other.m_values))
 		{
-			to_yale();
+
 		}
 		
 		sparse_matrix(std::initializer_list<value_type> data_list)
@@ -1387,8 +1382,6 @@ namespace algebra
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				m_values[i] = std::unique_ptr<sparse_pair>(new sparse_pair());
 			}
-
-
 			for (size_t i = 0; i < _Self::row_rank; ++i) {
 				for (size_t j = 0; j < _Self::column_rank; ++j) {
 					if (!value_type_traits::is_zero(data[i*_Self::column_rank + j])) {
@@ -1397,7 +1390,16 @@ namespace algebra
 					}
 				}
 			}
-			to_yale();
+		}
+
+		bool empty() const {
+			size_t i = 0;
+			while (i < row_rank) {
+				if (!m_values[i]->first.empty())
+					return false;
+				++i;
+			}
+			return true;
 		}
 		
 		_Self& operator=(const _Self& other)
@@ -1447,26 +1449,12 @@ namespace algebra
 			}
 		}
 
-		bool is_yale() {
-			return yale;
+		void set(size_t row, size_t column, value_type elem) {
+
 		}
 
-		void print_yale() {
-			if (!yale) return;
-			std::stringstream log;
-			for(auto i : values)
-				log << i << " ";
-			log << "\n";
-			for(auto i : cols)
-				log << i << " ";
-			log << "\n";
-			for(auto i : ia)
-				log << i << " ";
-			log << "\n";
 
 
-			test::log(log.str().c_str());
-		}
 
 		void print_matrix() const {
 			std::stringstream log;
@@ -1485,25 +1473,7 @@ namespace algebra
 		}
 
 
-		value_type yale_get(size_t row, size_t column) {
-			if (column >= _Self::column_rank)
-				throw std::invalid_argument("Column index out of range.");
-			if (row >= _Self::row_rank)
-				throw std::invalid_argument("Row index out of range.");
 
-
-			size_t index = ia[row];
-			size_t next_index = ia[row+1];
-			if (index == next_index) return value_type_traits::zero();
-			for (size_t i = index; i < next_index; ++i) {
-				//TODO: refactor later to do a binary search instead of linear
-				if (cols[i] == column) return values[i];
-				if (cols[i] > column) return value_type_traits::zero();
-			}
-
-			return value_type_traits::zero();//just in case
-
-		}
 
 //sparse_pair implementation(first draft)
 		static _Self sum(
@@ -1598,29 +1568,6 @@ namespace algebra
 
 
 	private:
-		void to_yale() {
-			size_t index = 0;
-			for (size_t i = 0; i < m_values.size(); ++i) {
-				ia[i] = index; 
-				auto& elem = m_values[i];
-				for (size_t j = 0; j < elem->first.size(); ++j) {
-					values.push_back(elem->second[j]);
-					cols.push_back(elem->first[j]);
-					++index;
-				}
-			}
-			ia[row_rank] = values.size();
-		}
-		//TODO: find some way of using arrays instead of std::vector(for speed)
-		bool yale = false;
-		//holds the values
-		std::vector<value_type> values;
-		//holds the column indices
-		std::vector<size_t> cols;
-		//holds the index of the first value in every row
-		size_t ia[row_rank + 1];
-
-
 		/*
 		Pair of vectors instead of vector of pairs allows the use of std::find to 
 		find the index of the datum. It's also faster. 
@@ -1632,6 +1579,34 @@ namespace algebra
 		
 	};
 
+	template <class M, class N, class P>
+	sparse_matrix<M, P> operator* (
+		const sparse_matrix<M, N>& m1,
+		const sparse_matrix<N, P>& m2)
+	{
+		sparse_matrix<M, P> result;
+
+		if (false == m1.empty() && false == m2.empty())
+		{
+			for (size_t row = 0; row < M::rank; ++row)
+			{
+				for (size_t col = 0; col < P::rank; ++col)
+				{
+					typename sparse_matrix<M, N>::value_type cell = number_traits<typename sparse_matrix<M, N>::value_type>::zero();
+
+//					m1.m_values[row]->first.size();
+					for (size_t i = 0; i < N::rank; ++i)
+					{
+						cell += m1(row, i) * m2(i, col);
+					}
+
+//					result(row, col) = cell;
+				}
+			}
+		}
+
+		return result;
+	}
 
 
 	template <class M, class N, class P>
