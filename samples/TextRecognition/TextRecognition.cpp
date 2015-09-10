@@ -102,18 +102,26 @@ int _tmain(int argc, _TCHAR* argv[])
 		print_usage();
 		return 1;
 	}
-
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<double> distr(0, 1);
 	mnist_data training = load_mnist(std::wstring(argv[1]));
 
 	oacr_network network;
 
-	test_success_rate(network, training, "Untrained");
+	mnist_data test_set = mnist_data(training.size() / 10);
+	for (size_t i = 0; i < training.size() / 10; ++i) {
+		size_t nextIndex = (size_t)(((double)training.size()) * distr(gen));
+		std::swap(training[nextIndex], training[training.size() - 1]);
+		test_set.push_back(training[training.size() - 1]);
+		training.pop_back();
+	}
+
+	test_success_rate(network, test_set, "Untrained");
 
 	std::vector<double> rates = get_learning_rates(1.5, 0.7, 10);
 
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<double> distr(0, 1);
+
 
 	std::vector<const mnist_digit*> input;
 
@@ -150,7 +158,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	size_t maxTests = 1000;
 	for (size_t i = 0; i < maxTests; ++i)
 	{
-		auto digit = training[(size_t)(((double)training.size()) * distr(gen))];
+		auto digit = test_set[(size_t)(((double)test_set.size()) * distr(gen))];
 
 		auto result = network.process(digit.second);
 		double confidence;
