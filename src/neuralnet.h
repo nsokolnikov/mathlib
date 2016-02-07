@@ -117,17 +117,14 @@ namespace machine_learning
 
 		void update_weights(
 			const input& data,
-			value_type rate)
+			value_type rate,
+			value_type regularization)
 		{
-			// Weights are updated in the direction oposite to gradient.
-			// Make sure that correct learning rate value is used.
-			rate = -std::abs(rate);
-
 			for (size_t row = 0; row < weights::row_rank; ++row)
 			{
 				for (size_t col = 0; col < weights::column_rank; ++col)
 				{
-					m_weights(row, col) += m_delta(row) * data(col) * rate;
+					m_weights(row, col) += (m_delta(row) + regularization * m_weights(row, col)) * data(col) * rate;
 				}
 			}
 		}
@@ -188,14 +185,15 @@ namespace machine_learning
 
 		void update_weights(
 			const input& data,
-			value_type rate)
+			value_type rate,
+			value_type regularization)
 		{
 			// Finally, update weights for this and next layers.
 			// Since the members of base class are allocated in memory
 			// before the members of the derived class, update weights
 			// from the base class first for a slight perf benefit.
-			_Base::update_weights(m_hidden.last_output(), rate);
-			m_hidden.update_weights(data, rate);
+			_Base::update_weights(m_hidden.last_output(), rate, regularization);
+			m_hidden.update_weights(data, rate, regularization);
 		}
 
 		const this_layer& get_layer() const
@@ -233,9 +231,10 @@ namespace machine_learning
 
 		void update_weights(
 			const input& data,
-			value_type rate)
+			value_type rate,
+			value_type regularization)
 		{
-			m_output.update_weights(data, rate);
+			m_output.update_weights(data, rate, regularization);
 		}
 
 		const this_layer& get_layer() const
@@ -266,7 +265,8 @@ namespace machine_learning
 
 		void train(const input& data,
 			const output& target,
-			value_type rate)
+			value_type rate,
+			value_type regularization = 0.000001)
 		{
 			// First, recursively process input through all layers.
 			// Training mode enables caching of important intermediate
@@ -278,7 +278,10 @@ namespace machine_learning
 			_Base::compute_delta(target);
 
 			// Finally, update the costs of all layers.
-			_Base::update_weights(data, rate);
+			// Make sure that correct learning and regularization rate values are used.
+			rate = -std::abs(rate);
+			regularization = std::abs(regularization);
+			_Base::update_weights(data, rate, regularization);
 		}
 	};
 }
