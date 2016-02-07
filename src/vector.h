@@ -291,8 +291,6 @@ namespace algebra
 	template <class D>
 	class vector
 	{
-	private:
-
 	public:
 		typedef typename D dimension;
 		static const size_t rank = dimension::rank;

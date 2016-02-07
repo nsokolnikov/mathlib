@@ -103,17 +103,52 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 1;
 	}
 
-	mnist_data training = load_mnist(std::wstring(argv[1]));
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<double> distr(0, 1);
+
+	mnist_data full = load_mnist(std::wstring(argv[1]));
+	mnist_data training;
+	mnist_data test;
+
+	while (full.size() > 0)
+	{
+		int digitId = full.back().first;
+
+		size_t segment = full.size();
+		while (segment > 0 && digitId == full[segment - 1].first)
+		{
+			--segment;
+		}
+
+		while (full.size() > segment)
+		{
+			size_t segmentSize = full.size() - segment;
+			size_t nextIndex = segment + (size_t)(((double)segmentSize) * distr(gen));
+
+			if (segmentSize > 1)
+			{
+				std::swap(full[nextIndex], full[full.size() - 1]);
+			}
+
+			if (0 == full.size() % 10)
+			{
+				test.push_back(full.back());
+			}
+			else
+			{
+				training.push_back(full.back());
+			}
+
+			full.pop_back();
+		}
+	}
 
 	oacr_network network;
 
 	test_success_rate(network, training, "Untrained");
 
 	std::vector<double> rates = get_learning_rates(1.5, 0.7, 10);
-
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<double> distr(0, 1);
 
 	std::vector<const mnist_digit*> input;
 
@@ -142,7 +177,8 @@ int _tmain(int argc, _TCHAR* argv[])
 			network.train(digit->second, get_target(digit->first), rate);
 		}
 
-		test_success_rate(network, training, "Test");
+		test_success_rate(network, training, "Training set");
+		test_success_rate(network, test, "Test set");
 	}
 
 	// Recognition
@@ -150,7 +186,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	size_t maxTests = 1000;
 	for (size_t i = 0; i < maxTests; ++i)
 	{
-		auto digit = training[(size_t)(((double)training.size()) * distr(gen))];
+		auto digit = test[(size_t)(((double)test.size()) * distr(gen))];
 
 		auto result = network.process(digit.second);
 		double confidence;
@@ -167,7 +203,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::cout << "Random sampling success rate: " << ((double)(maxTests - errors) / (double)maxTests) << "\r\n";
 
-	test_success_rate(network, training, "Full");
+	test_success_rate(network, test, "Full");
 
 	return 0;
 }

@@ -1483,7 +1483,7 @@ namespace algebra
 	struct _3_matix_mul_best_cost
 	{
 		typedef typename _3_matrix_mul_impl_1<A, B, C, D> impl_1;
-		typedef typename _3_matrix_mul_impl_1<A, B, C, D> impl_2;
+		typedef typename _3_matrix_mul_impl_2<A, B, C, D> impl_2;
 
 		typedef typename min_cost<impl_1, impl_2>::type type;
 
