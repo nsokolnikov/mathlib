@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "declaration.h"
 #include "expression.h"
@@ -353,16 +354,44 @@ namespace algebra
 			return (*this);
 		}
 
+		_Self& operator+= (const _Self& other)
+		{
+			if (false == other.empty())
+			{
+				this->_Init();
+
+				std::transform(
+					m_values.cbegin(), m_values.cend(),
+					other.m_values.cbegin(),
+					m_values.begin(),
+					[](const value_type& x1, const value_type& x2) { return x1 + x2; });
+			}
+
+			return (*this);
+		}
+
+		_Self& operator-= (const _Self& other)
+		{
+			if (false == other.empty())
+			{
+				this->_Init();
+
+				std::transform(
+					m_values.cbegin(), m_values.cend(),
+					other.m_values.cbegin(),
+					m_values.begin(),
+					[](const value_type& x1, const value_type& x2) { return x1 - x2; });
+			}
+
+			return (*this);
+		}
+
 		value_type& operator() (const size_t index)
 		{
 			if (index >= _Self::rank)
 				throw std::invalid_argument("Index out of range.");
 
-			if (m_values.size() == 0)
-			{
-				const value_type zero = number_traits<value_type>::zero();
-				m_values.assign(_Self::rank, zero);
-			}
+			this->_Init();
 
 			return m_values[index];
 		}
@@ -456,6 +485,15 @@ namespace algebra
 		}
 
 	private:
+		void _Init()
+		{
+			if (m_values.size() == 0)
+			{
+				const value_type zero = number_traits<value_type>::zero();
+				m_values.assign(_Self::rank, zero);
+			}
+		}
+
 		std::vector<value_type> m_values;
 	};
 
@@ -480,13 +518,8 @@ namespace algebra
 		const vector<D>& v1,
 		const vector<D>& v2)
 	{
-		vector<D> result;
-
-		for (size_t i = 0; i < vector<D>::rank; ++i)
-		{
-			result(i) = v1(i) + v2(i);
-		}
-
+		vector<D> result(v1);
+		result += v2;
 		return result;
 	}
 
@@ -495,13 +528,8 @@ namespace algebra
 		const vector<D>& v1,
 		const vector<D>& v2)
 	{
-		vector<D> result;
-
-		for (size_t i = 0; i < vector<D>::rank; ++i)
-		{
-			result(i) = v1(i) - v2(i);
-		}
-
+		vector<D> result(v1);
+		result -= v2;
 		return result;
 	}
 
