@@ -141,5 +141,25 @@ void test_vector()
 	test::assert(vt == v, "Test Failed: vt == v");
 	test::assert(vt == algebra::vector<D2> { 1, 2 }, "Test Failed: vt == (1, 2)");
 
+	{
+		test::verbose("Arithmetic operators tests");
+		algebra::vector<D2> v1{ 10, 20 };
+		algebra::vector<D2> v2{ 1, 2 };
+
+		test::assert(v1 + v2 == algebra::vector < D2 > { 11, 22 }, "Test Failed: v1 + v2 == (11, 22)");
+		test::assert(v1 - v2 == algebra::vector < D2 > { 9, 18 }, "Test Failed: v1 + v2 == (11, 22)");
+
+		v1 -= v2;
+		test::assert(v1 == algebra::vector < D2 > { 9, 18 }, "Test Failed: (v1 -= v2) == (9, 18)");
+
+		v1 += v2;
+		test::assert(v1 == algebra::vector < D2 > { 10, 20 }, "Test Failed: (v1 += v2) == (10, 20)");
+
+		algebra::vector<D2> v3;
+		test::assert(v1 == (v3 + v1), "Test Failed : v1 == (v3 + v1)");
+		test::assert(v1 == (v1 + v3), "Test Failed : v1 == (v3 + v1)");
+		test::assert(v3 == (v3 + v3), "Test Failed : v3 == (v3 + v3)");
+	}
+
 	sc.pass();
 }

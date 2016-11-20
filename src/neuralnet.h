@@ -53,7 +53,7 @@ namespace machine_learning
 		typedef typename weights::value_type value_type;
 
 		neuron_layer()
-			: m_weights(weights::random(-0.5, 0.5)), m_net_input(), m_output(), m_delta()
+			: m_weights(weights::random(-0.5, 0.5)), m_net_input(), m_output(), m_delta(), m_bias(output::random(-0.5, 0.5))
 		{}
 
 		const output& process(
@@ -61,6 +61,14 @@ namespace machine_learning
 			bool training = false)
 		{
 			m_net_input = m_weights * data;
+
+			// Bias transforms input vector from (x1, ..., xN) into (x1, ..., xN, 1.0),
+			// but to avoid input vector reallocs weights for bias column are kept separately
+			// from the weight matrix, and bias column is handled individually.
+			// Since input for bias column is always 1.0, then weight(row, bias) * 1.0
+			// is the same as weight(row, bias), so it is sufficient to simply add bias weight
+			// to the weighted sum of input.
+			m_net_input += m_bias;
 
 			std::transform(
 				m_net_input.cbegin(), m_net_input.cend(),
@@ -120,13 +128,28 @@ namespace machine_learning
 			value_type rate,
 			value_type regularization)
 		{
-			for (size_t row = 0; row < weights::row_rank; ++row)
+			// Update main weight table first. It is possible to use std::transform
+			// with column iterators, however the resulting code is less efficient
+			// compared to this version.
+			for (size_t col = 0; col < weights::column_rank; ++col)
 			{
-				for (size_t col = 0; col < weights::column_rank; ++col)
+				const value_type factor = data(col) * rate;
+				for (size_t row = 0; row < weights::row_rank; ++row)
 				{
-					m_weights(row, col) += (m_delta(row) + regularization * m_weights(row, col)) * data(col) * rate;
+					m_weights(row, col) += (m_delta(row) + regularization * m_weights(row, col)) * factor;
 				}
 			}
+
+			// And now update weights for bias column. This time std::transform is used
+			// to take advantage of vector iterators and memory prefetcher.
+			std::transform(
+				m_bias.cbegin(), m_bias.cend(),
+				m_delta.cbegin(),
+				m_bias.begin(),
+				[regularization, rate](const value_type& bias, const value_type& delta)
+				{
+					return bias + (delta + regularization * bias) * rate;
+				});
 		}
 
 		const output& delta() const
@@ -149,6 +172,7 @@ namespace machine_learning
 		output m_net_input;
 		output m_output;
 		output m_delta;
+		output m_bias;
 	};
 
 	// Implementation of an input or hidden layer in a neural network.
