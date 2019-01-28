@@ -43,3 +43,82 @@ void test_neural_network()
 
 	sc.pass();
 }
+
+void test_composite_networks()
+{
+	{
+		scenario sc("Test for machine_learning::convolution_2d_network");
+
+		algebra::vector<D4> input({ 0.0, 1.0, -1.0, 1.0 });
+
+		auto convolution = machine_learning::convolution_2d<D2, D2>(
+			algebra::matrix<D2, D1>({ 0.5, -0.5 }),
+			machine_learning::convolution_2d<D2, D2>(
+				algebra::matrix<D1, D2>({ 0.5, -0.5 }),
+				machine_learning::neural_network<D4, D5, D1>()));
+
+		auto copy = convolution;
+		test::assert(convolution.process(input) == copy.process(input), "Different processing result after network copy constructor.");
+
+		algebra::vector<D1> target = { 1.0 };
+		convolution.train(input, target, 0.01);
+		test::assert(convolution.process(input) != copy.process(input), "Identical processing result after network training.");
+
+		copy = convolution;
+		test::assert(convolution.process(input) == copy.process(input), "Different processing result after network copy operator.");
+
+		sc.pass();
+	}
+
+	{
+		scenario sc("Test for machine_learning::sampling_2d_network");
+
+		algebra::vector<D4> input({ 0.0, 1.0, -1.0, 1.0 });
+
+		auto sampling =
+			machine_learning::sampling_2d<algebra::vector<D4>, D2, D2, D1, D2>(
+			algebra::matrix<D1, D2>({ 0.5, 0.5 }),
+			machine_learning::neural_network<D2, D3, D1>());
+
+		auto copy = sampling;
+		test::assert(sampling.process(input) == copy.process(input), "Different processing result after network copy constructor.");
+
+		algebra::vector<D1> target = { 1.0 };
+		sampling.train(input, target, 0.01);
+		test::assert(sampling.process(input) != copy.process(input), "Identical processing result after network training.");
+
+		copy = sampling;
+		test::assert(sampling.process(input) == copy.process(input), "Different processing result after network copy operator.");
+
+		sc.pass();
+	}
+
+	{
+		scenario sc("Test for machine_learning::network_ensemble");
+
+		algebra::vector<D4> input({ 0.0, 1.0, -1.0, 1.0 });
+
+		auto ensemble = machine_learning::ensemble(
+			machine_learning::network<D4, D1>(),
+			machine_learning::convolution_2d<D2, D2>(
+				algebra::matrix<D2, D1>({ 0.5, -0.5 }),
+				machine_learning::convolution_2d<D2, D2>(
+					algebra::matrix<D1, D2>({ 0.5, -0.5 }),
+					machine_learning::neural_network<D4, D5, D1>())),
+			machine_learning::sampling_2d<algebra::vector<D4>, D2, D2, D1, D2>(
+				algebra::matrix<D1, D2>({ 0.5, 0.5 }),
+				machine_learning::neural_network<D2, D3, D1>()));
+
+		auto copy = ensemble;
+		test::assert(ensemble.process(input) == copy.process(input), "Different processing result after network copy constructor.");
+
+		algebra::vector<D1> target = { 1.0 };
+		ensemble.train(input, target, 0.01);
+		test::assert(ensemble.process(input) != copy.process(input), "Identical processing result after network training.");
+
+		copy = ensemble;
+		test::assert(ensemble.process(input) == copy.process(input), "Different processing result after network copy operator.");
+
+		sc.pass();
+	}
+}

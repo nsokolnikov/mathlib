@@ -188,5 +188,8 @@ void test_vector_iterators();
 void test_solve();
 
 void test_neural_network();
+void test_composite_networks();
+
+void test_projection();
 
 void run_tests();
