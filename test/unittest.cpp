@@ -27,6 +27,9 @@ void run_tests()
 		test_solve();
 
 		test_neural_network();
+		test_composite_networks();
+
+		test_projection();
 
 		test::log("===========================================");
 		test::log("All unit tests PASS");

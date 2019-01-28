@@ -308,4 +308,472 @@ namespace machine_learning
 			_Base::update_weights(data, rate, regularization);
 		}
 	};
+
+	// Utility template for a view projection of a vector into a 2D grid of values.
+	// Used to apply sampling and convolution on input vectors that represent 2D data input.
+	template <
+		class X,
+		class Y,
+		class _Input>
+	class projection_2d
+	{
+	public:
+		typedef typename X x_dimension;
+		typedef typename Y y_dimension;
+		typedef projection_2d<x_dimension, y_dimension, _Input> _Self;
+		static const size_t x_rank = x_dimension::rank;
+		static const size_t y_rank = y_dimension::rank;
+
+		static_assert(std::is_base_of<algebra::dimension<x_rank>, X>::value, "Type parameter X must be a dimension.");
+		static_assert(std::is_base_of<algebra::dimension<y_rank>, Y>::value, "Type parameter Y must be a dimension.");
+
+		typedef typename _Input input;
+		typedef typename input::value_type value_type;
+
+		static_assert(input::rank == _Self::x_rank * _Self::y_rank, "Input vector dimension does not match projectection dimensions.");
+
+		static value_type get(
+			const input& vect,
+			size_t x,
+			size_t y,
+			const value_type defaultValue)
+		{
+			if (x >= _Self::x_rank || y >= _Self::y_rank)
+				return defaultValue;
+
+			return vect(y * _Self::x_rank + x);
+		}
+
+		static void set(
+			input& vect,
+			size_t x,
+			size_t y,
+			const value_type val)
+		{
+			if (x < _Self::x_rank && y < _Self::y_rank)
+			{
+				vect(y * _Self::x_rank + x) = val;
+			}
+		}
+	};
+
+	// Implementation of a neural net that applies a 2D convolution with a given core
+	// to the input data before passing it to the inner network.
+	template <
+		class _Projection,
+		class _Core,
+		class _Network>
+	class convolution_2d_network
+	{
+	public:
+		typedef typename convolution_2d_network<_Projection, _Core, _Network> _Self;
+		typedef typename _Network network;
+		typedef typename _Core core;
+
+		typedef typename network::input input;
+		typedef typename network::output output;
+		typedef typename network::value_type value_type;
+
+		typedef typename _Projection::input projection_input;
+
+		static_assert(std::is_base_of<input, projection_input>::value, "Network input type does not match projection input type.");
+
+		convolution_2d_network(const core& core)
+			: m_network(), m_core(core)
+		{
+		}
+
+		convolution_2d_network(const core& core, const network& net)
+			: m_network(net), m_core(core)
+		{
+		}
+
+		convolution_2d_network(const _Self& other)
+			: m_network(other.m_network), m_core(other.m_core)
+		{
+		}
+
+		convolution_2d_network(_Self&& other)
+			: m_network(std::move(other.m_network)), m_core(std::move(other.m_core))
+		{
+		}
+
+		_Self& operator=(const _Self& other)
+		{
+			this->m_network = other.m_network;
+			this->m_core = other.m_core;
+			
+			return *this;
+		}
+
+		const output& process(
+			const input& data)
+		{
+			input convolution = apply_convolution(data);
+
+			return m_network.process(convolution);
+		}
+
+		void train(const input& data,
+			const output& target,
+			value_type rate,
+			value_type regularization = 0.000001)
+		{
+			input convolution = apply_convolution(data);
+
+			m_network.train(convolution, target, rate, regularization);
+		}
+
+	private:
+		input apply_convolution(const input& data) const
+		{
+			input result;
+
+			for (size_t y = 0; y < _Projection::y_rank; ++y)
+			{
+				for (size_t x = 0; x < _Projection::x_rank; ++x)
+				{
+					value_type value = 0.0;
+
+					for (size_t row = 0; row < _Core::row_rank; ++row)
+					{
+						for (size_t column = 0; column < _Core::column_rank; ++column)
+						{
+							value += _Projection::get(data, x + column, y + row, 0.0) * m_core(row, column);
+						}
+					}
+
+					_Projection::set(result, x, y, value);
+				}
+			}
+
+			return result;
+		}
+
+	private:
+		network m_network;
+		core m_core;
+	};
+
+	// Implementation of a neural net that applies a 2D sampling with a given core weights
+	// to the input data before passing it to the inner network.
+	template <
+		class _InputProjection,
+		class _OutputProjection,
+		class _Core,
+		class _Network>
+	class sampling_2d_network
+	{
+	public:
+		typedef typename sampling_2d_network<_InputProjection, _OutputProjection, _Core, _Network> _Self;
+
+		typedef typename _Network network;
+		typedef typename _Core core;
+
+		typedef typename _InputProjection::input input;
+		typedef typename network::output output;
+		typedef typename network::value_type value_type;
+
+		typedef typename network::input network_input;
+		typedef typename _InputProjection::input input_projection_input;
+		typedef typename _OutputProjection::input output_projection_input;
+		typedef typename _OutputProjection::input output_projection_output;
+
+		static_assert(std::is_base_of<input, input_projection_input>::value, "Network input type does not match output projection input type.");
+		static_assert(std::is_base_of<network_input, output_projection_output>::value, "Inner network input type does not match output projection output type.");
+
+		static_assert(_OutputProjection::x_rank * _Core::column_rank < _InputProjection::x_rank + _Core::column_rank, "Sampling on horizontal dimension is invalid.");
+		static_assert(_OutputProjection::y_rank * _Core::row_rank < _InputProjection::y_rank + _Core::row_rank, "Sampling on horizontal dimension is invalid.");
+
+		sampling_2d_network(const core& core)
+			: m_network(), m_core(core)
+		{
+		}
+
+		sampling_2d_network(const core& core, const network& n)
+			: m_network(n), m_core(core)
+		{
+		}
+
+		sampling_2d_network(const _Self& other)
+			: m_network(other.m_network), m_core(other.m_core)
+		{
+		}
+
+		sampling_2d_network(_Self&& other)
+			: m_network(std::move(other.m_network)), m_core(std::move(other.m_core))
+		{
+		}
+
+		_Self& operator=(const _Self& other)
+		{
+			this->m_network = other.m_network;
+			this->m_core = other.m_core;
+
+			return *this;
+		}
+
+		const output& process(
+			const input& data)
+		{
+			network_input sampling = apply_sampling(data);
+
+			return m_network.process(sampling);
+		}
+
+		void train(const input& data,
+			const output& target,
+			value_type rate,
+			value_type regularization = 0.000001)
+		{
+			network_input sampling = apply_sampling(data);
+
+			m_network.train(sampling, target, rate, regularization);
+		}
+
+	private:
+		network_input apply_sampling(const input& data) const
+		{
+			network_input result;
+
+			for (size_t y = 0; y < _OutputProjection::y_rank; ++y)
+			{
+				for (size_t x = 0; x < _OutputProjection::x_rank; ++x)
+				{
+					value_type value = 0.0;
+					size_t base_x = x * _Core::column_rank;
+					size_t base_y = y * _Core::row_rank;
+
+					for (size_t row = 0; row < _Core::row_rank; ++row)
+					{
+						for (size_t column = 0; column < _Core::column_rank; ++column)
+						{
+							value += _InputProjection::get(data, base_x + column, base_y + row, 0.0) * m_core(row, column);
+						}
+					}
+
+					_OutputProjection::set(result, x, y, value);
+				}
+			}
+
+			return result;
+		}
+
+	private:
+		network m_network;
+		core m_core;
+	};
+
+	template <class _N1, class _N2, class... _Args>
+	class _network_ensemble_impl : public _network_ensemble_impl<_N2, _Args...>
+	{
+	public:
+		static_assert(std::is_same<typename _N1::input, typename _N2::input>::value, "Network input types do not match.");
+		static_assert(std::is_same<typename _N1::output, typename _N2::output>::value, "Network output types do not match.");
+		static_assert(std::is_same<typename _N1::value_type, typename _N2::value_type>::value, "Network value types do not match.");
+
+		typedef typename _network_ensemble_impl<_N1, _N2, _Args...> _Self;
+		typedef typename _network_ensemble_impl<_N2, _Args...> _Base;
+		typedef typename _N1::input input;
+		typedef typename _Base::output output;
+		typedef typename _Base::value_type value_type;
+	
+		_network_ensemble_impl(const _N1& n1, const _N2& n2, const _Args&... args)
+			: _Base(n2, args...), m_network(n1)
+		{
+		}
+
+		_network_ensemble_impl(const _Self& other)
+			: _Base(other), m_network(other.m_network)
+		{
+		}
+
+		_Self& operator=(const _Self& other)
+		{
+			this->m_network = other.m_network;
+			*((_Base*)this) = (const _Base&)other;
+			
+			return *this;
+		}
+
+		void process(
+			const input& data,
+			output& result)
+		{
+			_Base::process(data, result);
+			const output& result2 = m_network.process(data);
+
+			std::transform(
+				result.cbegin(), result.cend(),
+				result2.cbegin(),
+				result.begin(),
+				[](const value_type& r1, const value_type& r2)
+			{
+				return std::max(r1, r2);
+			});
+		}
+
+		void train(const input& data,
+			const output& target,
+			value_type rate,
+			value_type regularization = 0.000001)
+		{
+			_Base::train(data, target, rate, regularization);
+			m_network.train(data, target, rate, regularization);
+		}
+
+	private:
+		_N1 m_network;
+	};
+
+	template <class _N1, class _N2>
+	class _network_ensemble_impl<_N1, _N2>
+	{
+	public:
+		static_assert(std::is_same<typename _N1::input, typename _N2::input>::value, "Network input types do not match.");
+		static_assert(std::is_same<typename _N1::output, typename _N2::output>::value, "Network output types do not match.");
+		static_assert(std::is_same<typename _N1::value_type, typename _N2::value_type>::value, "Network value types do not match.");
+
+		typedef typename _network_ensemble_impl<_N1, _N2> _Self;
+		typedef typename _N1::input input;
+		typedef typename _N1::output output;
+		typedef typename _N1::value_type value_type;
+
+		_network_ensemble_impl(const _N1& n1, const _N2& n2)
+			: m_network1(n1), m_network2(n2)
+		{
+		}
+
+		_network_ensemble_impl(const _Self& other)
+			: m_network1(other.m_network1), m_network2(other.m_network2)
+		{
+		}
+
+		_Self& operator=(const _Self& other)
+		{
+			m_network1 = other.m_network1;
+			m_network2 = other.m_network2;
+			return *this;
+		}
+
+		void process(
+			const input& data,
+			output& result)
+		{
+			const output& result1 = m_network1.process(data);
+			const output& result2 = m_network2.process(data);
+
+			std::transform(
+				result1.cbegin(), result1.cend(),
+				result2.cbegin(),
+				result.begin(),
+				[](const value_type& r1, const value_type& r2)
+			{
+				return std::max(r1, r2);
+			});
+		}
+
+		void train(const input& data,
+			const output& target,
+			value_type rate,
+			value_type regularization = 0.000001)
+		{
+			m_network1.train(data, target, rate, regularization);
+			m_network2.train(data, target, rate, regularization);
+		}
+
+	private:
+		_N1 m_network1;
+		_N2 m_network2;
+	};
+
+	// Variadic template for a neural network ensemble that computes the output
+	// by applying max-pooling to the results of all networks in the ensemble.
+	template <class _N1, class _N2, class... _Args>
+	class network_ensemble : protected _network_ensemble_impl<_N1, _N2, _Args...>
+	{
+	public:
+		typedef typename network_ensemble<_N1, _N2, _Args...> _Self;
+		typedef typename _network_ensemble_impl<_N1, _N2, _Args...> _Base;
+		typedef typename _Base::input input;
+		typedef typename _Base::output output;
+		typedef typename _Base::value_type value_type;
+
+		network_ensemble(const _N1& n1, const _N2& n2, const _Args&... args)
+			: _Base(n1, n2, args...), m_output()
+		{
+		}
+
+		network_ensemble(const _Self& other)
+			: _Base(other), m_output(other.m_output)
+		{
+		}
+
+		_Self& operator=(const _Self& other)
+		{
+			*((_Base*)this) = (const _Base&)other;
+			m_output = other.m_output;
+			return *this;
+		}
+
+		const output& process(
+			const input& data)
+		{
+			_Base::process(data, m_output);
+
+			return m_output;
+		}
+
+		void train(const input& data,
+			const output& target,
+			value_type rate,
+			value_type regularization = 0.000001)
+		{
+			_Base::train(data, target, rate, regularization);
+		}
+
+	private:
+		output m_output;
+	};
+
+	template <class... _Layers>
+	neural_network<_Layers...> network()
+	{
+		return neural_network<_Layers...>();
+	}
+
+	template <
+		class _X, 
+		class _Y,
+		class _Core,
+		class _Network>
+	convolution_2d_network<projection_2d<_X, _Y, typename _Network::input>, _Core, _Network> convolution_2d(
+		const _Core& core,
+		const _Network& network)
+	{
+		return convolution_2d_network<projection_2d<_X, _Y, typename _Network::input>, _Core, _Network>(core, network);
+	}
+
+	template <
+		class _Input,
+		class _XIn, 
+		class _YIn,
+		class _XOut,
+		class _YOut,
+		class _Core,
+		class _Network>
+	sampling_2d_network<projection_2d<_XIn, _YIn, _Input>, projection_2d<_XOut, _YOut, typename _Network::input>, _Core, _Network> sampling_2d(
+		const _Core& core,
+		const _Network& network)
+	{
+		return sampling_2d_network<projection_2d<_XIn, _YIn, _Input>, projection_2d<_XOut, _YOut, typename _Network::input>, _Core, _Network>(core, network);
+	}
+
+	template <class... _Networks>
+	network_ensemble<typename std::_Unrefwrap<_Networks>::type...> ensemble(
+		_Networks&&... args)
+	{
+		typedef network_ensemble<typename std::_Unrefwrap<_Networks>::type...> _Ntype;
+		return (_Ntype(std::forward<_Networks>(args)...));
+	}
 }

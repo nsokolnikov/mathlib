@@ -170,6 +170,7 @@
     <ClCompile Include="..\test\iterators.cpp" />
     <ClCompile Include="..\test\matrix.cpp" />
     <ClCompile Include="..\test\neuralnet.cpp" />
+    <ClCompile Include="..\test\projection.cpp" />
     <ClCompile Include="..\test\unittest.cpp" />
     <ClCompile Include="..\test\vector.cpp" />
     <ClCompile Include="..\test\view.cpp" />

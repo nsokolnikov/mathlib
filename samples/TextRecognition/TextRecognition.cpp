@@ -5,8 +5,22 @@
 
 struct D49 : public algebra::dimension<49> {};
 struct D10 : public algebra::dimension<10> {};
+struct D2 : public algebra::dimension<2> {};
+struct D28 : public algebra::dimension<28> {};
+struct D14 : public algebra::dimension<14> {};
+struct D196 : public algebra::dimension<196> {};
 
 typedef machine_learning::neural_network<D784, D49, D10> oacr_network;
+typedef machine_learning::neural_network<D196, D49, D10> oacr_sampled_network;
+
+typedef machine_learning::projection_2d<D14, D14, oacr_sampled_network::input> _14x14;
+typedef machine_learning::projection_2d<D28, D28, oacr_network::input> _28x28;
+
+typedef algebra::matrix<D2, D2> convolution_core;
+typedef algebra::matrix<D2, D2> sampling_core;
+
+typedef machine_learning::convolution_2d_network<_28x28, convolution_core, oacr_network> convolution_network;
+typedef machine_learning::sampling_2d_network<_28x28, _14x14, sampling_core, oacr_sampled_network> sampled_network;
 
 void print_usage()
 {
@@ -75,8 +89,9 @@ std::vector<double> get_learning_rates(
 	return result;
 }
 
+template <class _Network>
 void test_success_rate(
-	oacr_network& network,
+	_Network& network,
 	const mnist_data& training,
 	std::string prefix)
 {
@@ -86,13 +101,17 @@ void test_success_rate(
 		auto result = network.process(digit.second);
 		double confidence;
 		int recognized = get_result(result, confidence);
+
 		if (digit.first != recognized)
 		{
 			++errors;
 		}
 	}
 
-	std::cout << prefix.c_str() << " success rate: " << ((double)(training.size() - errors) / (double)training.size()) << "\r\n";
+	std::cout << prefix.c_str() 
+		<< " success rate: " << ((double)(training.size() - errors) / (double)training.size())
+		<< " error rate: " << ((double)(errors) / (double)training.size())
+		<< "\r\n";
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -131,7 +150,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				std::swap(full[nextIndex], full[full.size() - 1]);
 			}
 
-			if (0 == full.size() % 10)
+			if (full.size() % 10 < 2)
 			{
 				test.push_back(full.back());
 			}
@@ -144,7 +163,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	oacr_network network;
+	auto network = machine_learning::ensemble(
+		oacr_network(),
+		convolution_network({ -1.0, 1.0, 0.0, 0.0 }, oacr_network()),
+		convolution_network({ -1.0, 0.0, 1.0, 0.0 }, oacr_network()),
+		sampled_network({ 0.25, 0.25, 0.25, 0.25 }, oacr_sampled_network()));
 
 	test_success_rate(network, training, "Untrained");
 
@@ -157,24 +180,27 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		std::cout << "Training with rate " << rate << "\r\n";
 
-		input.resize(training.size());
-		std::transform(
-			training.cbegin(), training.cend(),
-			input.begin(),
-			[](const mnist_digit& digit) { return std::addressof(digit); });
-
-		while (input.size() > 0)
+		for (int i = 0; i < 3; ++i)
 		{
-			size_t nextIndex = (size_t)(((double)input.size()) * distr(gen));
-			const mnist_digit* digit = input[nextIndex];
+			input.resize(training.size());
+			std::transform(
+				training.cbegin(), training.cend(),
+				input.begin(),
+				[](const mnist_digit& digit) { return std::addressof(digit); });
 
-			if (input.size() > 1)
+			while (input.size() > 0)
 			{
-				std::swap(input[nextIndex], input[input.size() - 1]);
-			}
-			input.pop_back();
+				size_t nextIndex = (size_t)(((double)input.size()) * distr(gen));
+				const mnist_digit* digit = input[nextIndex];
 
-			network.train(digit->second, get_target(digit->first), rate);
+				if (input.size() > 1)
+				{
+					std::swap(input[nextIndex], input[input.size() - 1]);
+				}
+				input.pop_back();
+
+				network.train(digit->second, get_target(digit->first), rate);
+			}
 		}
 
 		test_success_rate(network, training, "Training set");
@@ -189,6 +215,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		auto digit = test[(size_t)(((double)test.size()) * distr(gen))];
 
 		auto result = network.process(digit.second);
+
 		double confidence;
 		int recognized = get_result(result, confidence);
 		std::cout << "Actual: " << digit.first << "; detected: " << recognized << "; confidence: " << confidence;
@@ -201,9 +228,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::cout << "\r\n";
 	}
 
-	std::cout << "Random sampling success rate: " << ((double)(maxTests - errors) / (double)maxTests) << "\r\n";
+	std::cout
+		<< "Random sampling success rate: " << ((double)(maxTests - errors) / (double)maxTests)
+		<< " error rate: " << ((double)(errors) / (double)maxTests)
+		<< "\r\n";
 
-	test_success_rate(network, test, "Full");
+	full = load_mnist(std::wstring(argv[1]));
+
+	test_success_rate(network, full, "Full");
 
 	return 0;
 }
